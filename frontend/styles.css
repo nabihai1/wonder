@@ -141,8 +141,13 @@ textarea::placeholder {
     margin: 0;
 }
 
-#storyText {
+#story-display {
     font-size: 1.25rem;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 .alice-regular {

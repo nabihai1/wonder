@@ -22,9 +22,9 @@
         <p id="story-display"></p>
     </div>
     <footer class="footer">
-        <button onclick="previousPage()">Back</button>
+        <button id="backBtn" onclick="previousPage()">Back</button>
         <p id="page-indicator">Page 1 of 1</p>
-        <button onclick="nextPage()">Next</button>
+        <button id="nextBtn" onclick="nextPage()">Next</button>
     </footer>
 
     <!-- Settings popup -->
@@ -36,10 +36,9 @@
                 <button class="theme-btn" data-theme="dark">Dark mode</button>
                 <button class="theme-btn" data-theme="light">Light mode</button>
             </div>
+            <button id="closeSettingsBtn" class="close-btn">Close</button>
         </div>
     </div>
-    <div class="main"></div>
-    <div class="footer"></div>
 
     <script src="app.js"></script>
 </body>

@@ -1,104 +1,26 @@
 const openStoryBtn = document.getElementById("openStoryBtn");
+const mainBtn = document.getElementById("mainBtn");
+const backBtn = document.getElementById("backBtn");
+const nextBtn = document.getElementById("nextBtn");
+const pageIndicator = document.getElementById("page-indicator");
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsOverlay = document.getElementById("settingsOverlay");
 const closeSettingsBtn = document.getElementById("closeSettingsBtn");
 const themeBtns = document.querySelectorAll(".theme-btn");
-const storyDisplay = document.getElementById("story-display");
-
+const storyText = document.getElementById("story-display");
 const biggerBtn = document.getElementById("biggerBtn");
 const smallerBtn = document.getElementById("smallerBtn");
-
-const mainBtn = document.getElementById("mainBtn");
-
 const catBtn = document.getElementById("catBtn");
 
-// ---------- Page navigation ----------
-
-let pages = [];
-let currentPage = 0;
-
-function splitStory(text) {
-    const words = text.trim().split(/\s+/);
-    pages = [];
-
-    for (let i = 0; i < words.length; i += 4) {
-        pages.push(words.slice(i, i + 4).join(" "));
-    }
-}
-
-// index.html -> story.html
-if (openStoryBtn) {
-    openStoryBtn.addEventListener("click", () => {
-        const story = document.getElementById("story-input").value;
-
-        if (!story.trim()) {
-            alert("Please enter a story first!");
-            return;
-        }
-
-        sessionStorage.setItem("story", story);
-        window.location.href = "story.html";
-    });
-}
-
-// On story.html, show the saved story
-
-if (mainBtn) {
-    mainBtn.addEventListener("click", () => {
-        window.speechSynthesis.cancel();
-        window.location.href = "index.html";
-    });
-}
-
-if (storyDisplay) {
-    const story = sessionStorage.getItem("story") || "";
-
-    splitStory(story);
-    displayPage();
-}
-
-function displayPage() {
-    if (!storyDisplay) return;
-
-    storyDisplay.textContent = pages[currentPage] || "";
-
-    const indicator = document.getElementById("page-indicator");
-
-    if (indicator) {
-        indicator.textContent =
-            `Page ${currentPage + 1} of ${pages.length}`;
-    }
-}
-
-function nextPage() {
-    if (currentPage < pages.length - 1) {
-        currentPage++;
-        displayPage();
-    }
-}
-
-function previousPage() {
-    if (currentPage > 0) {
-        currentPage--;
-        displayPage();
-    }
-}
-
-<<<<<<< HEAD
 // ---------- Reading + highlighting ----------
 let wordSpans = [];
 let wordStarts = [];
 let highlightTimer = null;
 let usingRealBoundaries = false;
 let currentUtterance = null;
-=======
-function readStory() {
-    const text = pages[currentPage];
->>>>>>> 2e3d30df43618992174cf003ad5cac6181f67d2d
 
 const MS_PER_CHAR = 70;   // raise if highlight runs ahead of the voice, lower if it lags
 
-// Wrap each word of the text in a <span>, keeping the original spacing
 function renderWords(text) {
     storyText.textContent = "";
     wordSpans = [];
@@ -136,7 +58,6 @@ function highlightWordAt(charIndex) {
     if (wordSpans[current]) wordSpans[current].classList.add("highlight");
 }
 
-// Estimate which word is being spoken, using word length for timing
 function startEstimatedHighlight(rate) {
     let i = 0;
 
@@ -197,13 +118,11 @@ function readStory() {
     speech.pitch = 1.3;
     speech.rate = 0.95;
 
-    // Start the estimated highlight when the voice actually begins
     speech.onstart = () => {
         if (currentUtterance !== speech) return;
         startEstimatedHighlight(speech.rate);
     };
 
-    // If the voice does send real word events, switch to those
     speech.onboundary = (e) => {
         if (currentUtterance !== speech) return;
         if (e.name && e.name !== "word") return;
@@ -224,23 +143,85 @@ function readStory() {
 if (catBtn) {
     catBtn.addEventListener("click", () => {
         if (window.speechSynthesis.speaking) {
-            stopReading();   // click again to stop
+            stopReading();
         } else {
             readStory();
         }
     });
 }
 
-<<<<<<< HEAD
-// Stop talking if the person leaves the page
 window.addEventListener("beforeunload", () => window.speechSynthesis.cancel());
 
-function goBack() {
-    window.speechSynthesis.cancel();
-    window.location.href = "index.html";
+// ---------- Page navigation ----------
+
+// index.html -> story.html
+if (openStoryBtn) {
+    openStoryBtn.addEventListener("click", () => {
+        const story = document.getElementById("story-input").value;
+        // save in both places so every version of the story page can find it
+        try {
+            localStorage.setItem("story", story);
+            sessionStorage.setItem("story", story);
+        } catch (e) {}
+        window.location.href = "story.html";
+    });
 }
-=======
->>>>>>> 2e3d30df43618992174cf003ad5cac6181f67d2d
+
+// story.html -> index.html
+if (mainBtn) {
+    mainBtn.addEventListener("click", () => {
+        stopReading();
+        window.location.href = "index.html";
+    });
+}
+
+// ---------- Pagination: 4 words per page ----------
+(function () {
+    const WORDS_PER_PAGE = 4;
+
+    const textEl = document.getElementById("story-display");
+    const labelEl = document.getElementById("page-indicator");
+    const prevEl = document.getElementById("backBtn");
+    const nextEl = document.getElementById("nextBtn");
+
+    if (!textEl) return; // not on story.html
+
+    let saved = "";
+    try {
+        saved = localStorage.getItem("story") || sessionStorage.getItem("story") || "";
+    } catch (e) {}
+
+    const words = saved.trim().split(/\s+/).filter(Boolean);
+    const pages = [];
+    for (let i = 0; i < words.length; i += WORDS_PER_PAGE) {
+        pages.push(words.slice(i, i + WORDS_PER_PAGE).join(" "));
+    }
+    if (pages.length === 0) pages.push("No story yet.");
+
+    let current = 0;
+
+    function render() {
+        if (typeof stopReading === "function") stopReading(); // stop the Cat on page change
+        textEl.textContent = pages[current];
+        if (labelEl) labelEl.textContent = `Page ${current + 1} of ${pages.length}`;
+        if (prevEl) prevEl.disabled = current === 0;
+        if (nextEl) nextEl.disabled = current === pages.length - 1;
+    }
+
+    if (nextEl) nextEl.addEventListener("click", () => {
+        if (current < pages.length - 1) { current++; render(); }
+    });
+
+    if (prevEl) prevEl.addEventListener("click", () => {
+        if (current > 0) { current--; render(); }
+    });
+
+    // Let the Cat code read the current page
+    window.getCurrentPageText = () => pages[current];
+
+    render();
+})();
+
 // ---------- Settings popup ----------
 function openSettings() {
     settingsOverlay.classList.remove("hidden");
@@ -253,14 +234,12 @@ function closeSettings() {
 if (settingsBtn) settingsBtn.addEventListener("click", openSettings);
 if (closeSettingsBtn) closeSettingsBtn.addEventListener("click", closeSettings);
 
-// Click the dark area outside the popup to close it
 if (settingsOverlay) {
     settingsOverlay.addEventListener("click", (e) => {
         if (e.target === settingsOverlay) closeSettings();
     });
 }
 
-// Escape key closes it too
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && settingsOverlay) closeSettings();
 });
@@ -273,14 +252,12 @@ function setTheme(theme) {
     });
 }
 
-// Load the saved theme (defaults to dark)
 let savedTheme = "dark";
 try {
     savedTheme = localStorage.getItem("theme") || "dark";
 } catch (e) {}
 setTheme(savedTheme);
 
-// Switch theme when a button is clicked
 themeBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
         setTheme(btn.dataset.theme);
@@ -291,24 +268,19 @@ themeBtns.forEach((btn) => {
 });
 
 // ---------- Font size ----------
+const MIN_SIZE = 12;
+const MAX_SIZE = 48;
+const STEP = 2;
 
-const MIN_SIZE = 12;  // px
-const MAX_SIZE = 48;  // px
-const STEP = 2;       // px per click
+let fontSize = 20;
 
-let fontSize = 20;    // default size in px (matches 1.25rem)
-
-// Load the saved size, if there is one
 try {
     const savedSize = parseInt(localStorage.getItem("fontSize"), 10);
     if (savedSize) fontSize = savedSize;
 } catch (e) {}
 
 function applyFontSize() {
-    if (storyDisplay) {
-        storyDisplay.style.fontSize = fontSize + "px";
-    }
-
+    if (storyText) storyText.style.fontSize = fontSize + "px";
     try {
         localStorage.setItem("fontSize", fontSize);
     } catch (e) {}
@@ -328,12 +300,4 @@ if (smallerBtn) {
         fontSize = Math.max(fontSize - STEP, MIN_SIZE);
         applyFontSize();
     });
-}
-
-function showPage() {
-    stopReading();
-    renderPageText(pages[currentPage]);
-    pageIndicator.textContent = `Page ${currentPage + 1} of ${pages.length}`;
-    backBtn.disabled = currentPage === 0;
-    nextBtn.disabled = currentPage === pages.length - 1;
 }
