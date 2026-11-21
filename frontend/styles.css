@@ -3,8 +3,14 @@ body {
     flex-direction: column;
     background: #13386B;
     color: white;
+    margin: 0;
+    padding: 24px;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
 .header {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
