@@ -4,6 +4,13 @@ const settingsBtn = document.getElementById("settingsBtn");
 const settingsOverlay = document.getElementById("settingsOverlay");
 const closeSettingsBtn = document.getElementById("closeSettingsBtn");
 const themeBtns = document.querySelectorAll(".theme-btn");
+const storyText = document.getElementById("storyText");
+const storyDisplay = document.getElementById("story-display");
+
+const biggerBtn = document.getElementById("biggerBtn");
+const smallerBtn = document.getElementById("smallerBtn");
+
+const mainBtn = document.getElementById("mainBtn");
 
 // ---------- Page navigation ----------
 
@@ -24,13 +31,13 @@ if (mainBtn) {
 }
 
 // On story.html, show the saved story
-const storyText = document.getElementById("storyText");
+
 if (storyText) {
-    storyText.textContent = sessionStorage.getItem("story") || "No story yet.";
+    storyText.textContent = localStorage.getItem("story") || "No story yet.";
 }
-const storyDisplay = document.getElementById("story-display");
-    if (storyDisplay) {
-        storyDisplay.textContent = localStorage.getItem("story") || "";
+
+if (storyDisplay) {
+    storyDisplay.textContent = localStorage.getItem("story") || "";
 }
 
 function readStory() {
@@ -103,8 +110,6 @@ themeBtns.forEach((btn) => {
 });
 
 // ---------- Font size ----------
-const biggerBtn = document.getElementById("biggerBtn");
-const smallerBtn = document.getElementById("smallerBtn");
 
 const MIN_SIZE = 12;  // px
 const MAX_SIZE = 48;  // px
