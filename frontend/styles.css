@@ -109,6 +109,7 @@ textarea::placeholder {
     border-radius: 12px;
     width: 90%;
     max-width: 320px;
+
 }
 
 .modal h2 {
@@ -157,4 +158,25 @@ textarea::placeholder {
 
 .page-indicator p {
     margin: 0;
+}
+
+.word.highlight {
+    background: #ffe066;
+    color: #13386B;
+    border-radius: 4px;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    background: transparent;
+    color: var(--text);
+    border: 2px solid var(--modal-border);
+    border-radius: 8px;
+    font-family: inherit;
+}
+
+select option {
+    color: #13386B;
 }
