@@ -29,6 +29,44 @@ if (storyText) {
     storyText.textContent = sessionStorage.getItem("story") || "No story yet.";
 }
 
+function openStory() {
+    const text = document.getElementById("story-input").value;
+
+    if (!text.trim()) {
+        alert("Please paste a story first!");
+        return;
+    }
+
+    localStorage.setItem("story", text);
+
+    window.location.href = "story.html";
+}
+
+const storyDisplay = document.getElementById("story-display");
+    if (storyDisplay) {
+        storyDisplay.textContent = localStorage.getItem("story") || "";
+}
+
+function readStory() {
+    const text = localStorage.getItem("story");
+
+    if (!text) return;
+
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(text);
+
+    window.speechSynthesis.speak(speech);
+}
+
+function stopReading() {
+    window.speechSynthesis.cancel();
+}
+
+function goBack() {
+    window.speechSynthesis.cancel();
+    window.location.href = "index.html";
+}
 // ---------- Settings popup ----------
 function openSettings() {
     settingsOverlay.classList.remove("hidden");
