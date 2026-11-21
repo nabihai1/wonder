@@ -19,13 +19,26 @@ body {
     flex-direction: column;
     background: var(--bg);   /* was #13386B */
     color: var(--text);      /* was white */
+    background: #13386B;
+    color: white;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     margin: 0;
     padding: 24px;
-    min-height: 100vh;
     box-sizing: border-box;
 }
 
 .header {
+    display: flex;
+    margin: 1rem;
+}
+
+.main {
+    flex: 1;
+}
+
+.footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -87,4 +100,21 @@ body {
 .theme-btn.active {
     border-color: var(--text);
     font-weight: bold;
+}
+button {
+    background: transparent;
+    color: white;
+    outline: none;
+    border: 2px solid white;
+    border-radius: 20px;
+    padding: 0.5rem;
+    margin: 2rem;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+h1 {
+    padding: 1rem;
 }
