@@ -1,4 +1,4 @@
-const makePagesBtn = document.getElementById("makePagesBtn");
+const openStoryBtn = document.getElementById("openStoryBtn");
 const backBtn = document.getElementById("backBtn");
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsOverlay = document.getElementById("settingsOverlay");
@@ -8,8 +8,8 @@ const themeBtns = document.querySelectorAll(".theme-btn");
 // ---------- Page navigation ----------
 
 // index.html -> story.html
-if (makePagesBtn) {
-    makePagesBtn.addEventListener("click", () => {
+if (openStoryBtn) {
+    openStoryBtn.addEventListener("click", () => {
         const story = document.getElementById("story-input").value;
         sessionStorage.setItem("story", story); // save it for the next page
         window.location.href = "story.html";
@@ -28,7 +28,31 @@ const storyText = document.getElementById("storyText");
 if (storyText) {
     storyText.textContent = sessionStorage.getItem("story") || "No story yet.";
 }
+const storyDisplay = document.getElementById("story-display");
+    if (storyDisplay) {
+        storyDisplay.textContent = localStorage.getItem("story") || "";
+}
 
+function readStory() {
+    const text = localStorage.getItem("story");
+
+    if (!text) return;
+
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(text);
+
+    window.speechSynthesis.speak(speech);
+}
+
+function stopReading() {
+    window.speechSynthesis.cancel();
+}
+
+function goBack() {
+    window.speechSynthesis.cancel();
+    window.location.href = "index.html";
+}
 // ---------- Settings popup ----------
 function openSettings() {
     settingsOverlay.classList.remove("hidden");
