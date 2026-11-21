@@ -145,3 +145,17 @@ if (smallerBtn) {
         applyFontSize();
     });
 }
+
+//------------------file upload-----------------------------------
+const uploadBtn = document.getElementById("uploadBtn");
+const fileInput = document.getElementById("fileInput");
+
+if (uploadBtn) {
+    uploadBtn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        localStorage.setItem("story", await file.text());
+        window.location.href = "story.html";
+    });
+}
