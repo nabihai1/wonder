@@ -16,15 +16,12 @@
         <button id="settingsBtn">Settings</button>
     </div>
     <div class="main">
-        <p id="storyText">Text</p>
+        <p id="story-display"></p>
     </div>
     <footer class="footer">
-        <button id="backBtn">Back</button>
-        <div class="page-indicator">
-            <p>Page 1 of 1</p>
-            <button></button>
-            <button>Next</button>
-        </div>
+        <button onclick="previousPage()">Back</button>
+        <p id="page-indicator">Page 1 of 1</p>
+        <button onclick="nextPage()">Next</button>
     </footer>
 
     <!-- Settings popup -->

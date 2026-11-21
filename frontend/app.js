@@ -14,34 +14,78 @@ const mainBtn = document.getElementById("mainBtn");
 
 // ---------- Page navigation ----------
 
+let pages = [];
+let currentPage = 0;
+
+function splitStory(text) {
+    const words = text.trim().split(/\s+/);
+    pages = [];
+
+    for (let i = 0; i < words.length; i += 4) {
+        pages.push(words.slice(i, i + 4).join(" "));
+    }
+}
+
 // index.html -> story.html
 if (openStoryBtn) {
     openStoryBtn.addEventListener("click", () => {
         const story = document.getElementById("story-input").value;
-        sessionStorage.setItem("story", story); // save it for the next page
-        window.location.href = "story.html";
-    });
-}
 
-// story.html -> index.html
-if (mainBtn) {
-    mainBtn.addEventListener("click", () => {
-        window.location.href = "index.html";
+        if (!story.trim()) {
+            alert("Please enter a story first!");
+            return;
+        }
+
+        sessionStorage.setItem("story", story);
+        window.location.href = "story.html";
     });
 }
 
 // On story.html, show the saved story
 
-if (storyText) {
-    storyText.textContent = localStorage.getItem("story") || "No story yet.";
+if (mainBtn) {
+    mainBtn.addEventListener("click", () => {
+        window.speechSynthesis.cancel();
+        window.location.href = "index.html";
+    });
 }
 
 if (storyDisplay) {
-    storyDisplay.textContent = localStorage.getItem("story") || "";
+    const story = sessionStorage.getItem("story") || "";
+
+    splitStory(story);
+    displayPage();
+}
+
+function displayPage() {
+    if (!storyDisplay) return;
+
+    storyDisplay.textContent = pages[currentPage] || "";
+
+    const indicator = document.getElementById("page-indicator");
+
+    if (indicator) {
+        indicator.textContent =
+            `Page ${currentPage + 1} of ${pages.length}`;
+    }
+}
+
+function nextPage() {
+    if (currentPage < pages.length - 1) {
+        currentPage++;
+        displayPage();
+    }
+}
+
+function previousPage() {
+    if (currentPage > 0) {
+        currentPage--;
+        displayPage();
+    }
 }
 
 function readStory() {
-    const text = localStorage.getItem("story");
+    const text = pages[currentPage];
 
     if (!text) return;
 
@@ -125,6 +169,8 @@ try {
 
 function applyFontSize() {
     if (storyText) storyText.style.fontSize = fontSize + "px";
+    if (storyDisplay) storyDisplay.style.fontSize = fontSize + "px";
+
     try {
         localStorage.setItem("fontSize", fontSize);
     } catch (e) {}
