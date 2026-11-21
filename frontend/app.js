@@ -25,22 +25,41 @@ if (storyText) {
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsPanel = document.getElementById("settingsPanel");
 
-function readStory() {
+function openStory() {
     const text = document.getElementById("story-input").value;
 
-    if (!text.trim()) return;
+    if (!text.trim()) {
+        alert("Please paste a story first!");
+        return;
+    }
+
+    localStorage.setItem("story", text);
+
+    window.location.href = "story.html";
+}
+
+const storyDisplay = document.getElementById("story-display");
+    if (storyDisplay) {
+        storyDisplay.textContent = localStorage.getItem("story") || "";
+}
+
+function readStory() {
+    const text = localStorage.getItem("story");
+
+    if (!text) return;
 
     window.speechSynthesis.cancel();
 
     const speech = new SpeechSynthesisUtterance(text);
-
-    speech.rate = 1;
-    speech.pitch = 1;
-    speech.volume = 1;
 
     window.speechSynthesis.speak(speech);
 }
 
 function stopReading() {
     window.speechSynthesis.cancel();
+}
+
+function goBack() {
+    window.speechSynthesis.cancel();
+    window.location.href = "index.html";
 }
