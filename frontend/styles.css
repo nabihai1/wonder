@@ -138,3 +138,5 @@ textarea::placeholder {
 #storyText {
     font-size: 1.25rem;
 }
+
+#asciiArt { font-family: monospace; line-height: 1.1; white-space: pre; }
