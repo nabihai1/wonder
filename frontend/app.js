@@ -1,16 +1,156 @@
 const openStoryBtn = document.getElementById("openStoryBtn");
+const mainBtn = document.getElementById("mainBtn");
 const backBtn = document.getElementById("backBtn");
+const nextBtn = document.getElementById("nextBtn");
+const pageIndicator = document.getElementById("page-indicator");
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsOverlay = document.getElementById("settingsOverlay");
 const closeSettingsBtn = document.getElementById("closeSettingsBtn");
 const themeBtns = document.querySelectorAll(".theme-btn");
-const storyText = document.getElementById("storyText");
-const storyDisplay = document.getElementById("story-display");
-
+const storyText = document.getElementById("story-display");
 const biggerBtn = document.getElementById("biggerBtn");
 const smallerBtn = document.getElementById("smallerBtn");
+const catBtn = document.getElementById("catBtn");
 
-const mainBtn = document.getElementById("mainBtn");
+// ---------- Reading + highlighting ----------
+let wordSpans = [];
+let wordStarts = [];
+let highlightTimer = null;
+let usingRealBoundaries = false;
+let currentUtterance = null;
+
+const MS_PER_CHAR = 70;   // raise if highlight runs ahead of the voice, lower if it lags
+
+function renderWords(text) {
+    storyText.textContent = "";
+    wordSpans = [];
+    wordStarts = [];
+
+    let lastEnd = 0;
+    for (const match of text.matchAll(/\S+/g)) {
+        if (match.index > lastEnd) {
+            storyText.appendChild(
+                document.createTextNode(text.slice(lastEnd, match.index))
+            );
+        }
+        const span = document.createElement("span");
+        span.className = "word";
+        span.textContent = match[0];
+        storyText.appendChild(span);
+
+        wordSpans.push(span);
+        wordStarts.push(match.index);
+        lastEnd = match.index + match[0].length;
+    }
+}
+
+function clearHighlight() {
+    wordSpans.forEach((span) => span.classList.remove("highlight"));
+}
+
+function highlightWordAt(charIndex) {
+    let current = 0;
+    for (let i = 0; i < wordStarts.length; i++) {
+        if (wordStarts[i] <= charIndex) current = i;
+        else break;
+    }
+    clearHighlight();
+    if (wordSpans[current]) wordSpans[current].classList.add("highlight");
+}
+
+function startEstimatedHighlight(rate) {
+    let i = 0;
+
+    function step() {
+        if (usingRealBoundaries || i >= wordSpans.length) return;
+
+        clearHighlight();
+        wordSpans[i].classList.add("highlight");
+
+        const word = wordSpans[i].textContent;
+        let ms = ((word.length + 1) * MS_PER_CHAR) / rate;
+        if (/[.!?]$/.test(word)) ms += 350;
+        else if (/[,;:]$/.test(word)) ms += 150;
+
+        i++;
+        highlightTimer = setTimeout(step, ms);
+    }
+
+    step();
+}
+
+function stopReading() {
+    currentUtterance = null;
+    clearTimeout(highlightTimer);
+    usingRealBoundaries = false;
+    window.speechSynthesis.cancel();
+    clearHighlight();
+}
+
+// ---------- Cheshire Cat voice ----------
+const CAT_VOICE_NAME = "Google UK English Male";
+let catVoice = null;
+
+function loadCatVoice() {
+    const voices = window.speechSynthesis.getVoices();
+    catVoice =
+        voices.find((v) => v.name === CAT_VOICE_NAME) ||
+        voices.find((v) => v.lang === "en-GB") ||
+        null;
+}
+
+loadCatVoice();
+window.speechSynthesis.addEventListener("voiceschanged", loadCatVoice);
+
+function readStory() {
+    if (!storyText) return;
+    stopReading();
+
+    const text = storyText.textContent.trim();
+    if (!text) return;
+
+    renderWords(text);
+
+    const speech = new SpeechSynthesisUtterance(text);
+    currentUtterance = speech;
+
+    if (catVoice) speech.voice = catVoice;
+    speech.pitch = 1.3;
+    speech.rate = 0.95;
+
+    speech.onstart = () => {
+        if (currentUtterance !== speech) return;
+        startEstimatedHighlight(speech.rate);
+    };
+
+    speech.onboundary = (e) => {
+        if (currentUtterance !== speech) return;
+        if (e.name && e.name !== "word") return;
+        usingRealBoundaries = true;
+        clearTimeout(highlightTimer);
+        highlightWordAt(e.charIndex);
+    };
+
+    speech.onend = () => {
+        if (currentUtterance !== speech) return;
+        clearTimeout(highlightTimer);
+        clearHighlight();
+    };
+
+    window.speechSynthesis.speak(speech);
+}
+
+if (catBtn) {
+    catBtn.addEventListener("click", () => {
+        if (window.speechSynthesis.speaking) {
+            stopReading();
+        } else {
+            readStory();
+        }
+    });
+}
+
+window.addEventListener("beforeunload", () => window.speechSynthesis.cancel());
 
 // ---------- Page navigation ----------
 
@@ -18,7 +158,11 @@ const mainBtn = document.getElementById("mainBtn");
 if (openStoryBtn) {
     openStoryBtn.addEventListener("click", () => {
         const story = document.getElementById("story-input").value;
-        sessionStorage.setItem("story", story); // save it for the next page
+        // save in both places so every version of the story page can find it
+        try {
+            localStorage.setItem("story", story);
+            sessionStorage.setItem("story", story);
+        } catch (e) {}
         window.location.href = "story.html";
     });
 }
@@ -26,40 +170,58 @@ if (openStoryBtn) {
 // story.html -> index.html
 if (mainBtn) {
     mainBtn.addEventListener("click", () => {
+        stopReading();
         window.location.href = "index.html";
     });
 }
 
-// On story.html, show the saved story
+// ---------- Pagination: 4 words per page ----------
+(function () {
+    const WORDS_PER_PAGE = 4;
 
-if (storyText) {
-    storyText.textContent = localStorage.getItem("story") || "No story yet.";
-}
+    const textEl = document.getElementById("story-display");
+    const labelEl = document.getElementById("page-indicator");
+    const prevEl = document.getElementById("backBtn");
+    const nextEl = document.getElementById("nextBtn");
 
-if (storyDisplay) {
-    storyDisplay.textContent = localStorage.getItem("story") || "";
-}
+    if (!textEl) return; // not on story.html
 
-function readStory() {
-    const text = localStorage.getItem("story");
+    let saved = "";
+    try {
+        saved = localStorage.getItem("story") || sessionStorage.getItem("story") || "";
+    } catch (e) {}
 
-    if (!text) return;
+    const words = saved.trim().split(/\s+/).filter(Boolean);
+    const pages = [];
+    for (let i = 0; i < words.length; i += WORDS_PER_PAGE) {
+        pages.push(words.slice(i, i + WORDS_PER_PAGE).join(" "));
+    }
+    if (pages.length === 0) pages.push("No story yet.");
 
-    window.speechSynthesis.cancel();
+    let current = 0;
 
-    const speech = new SpeechSynthesisUtterance(text);
+    function render() {
+        if (typeof stopReading === "function") stopReading(); // stop the Cat on page change
+        textEl.textContent = pages[current];
+        if (labelEl) labelEl.textContent = `Page ${current + 1} of ${pages.length}`;
+        if (prevEl) prevEl.disabled = current === 0;
+        if (nextEl) nextEl.disabled = current === pages.length - 1;
+    }
 
-    window.speechSynthesis.speak(speech);
-}
+    if (nextEl) nextEl.addEventListener("click", () => {
+        if (current < pages.length - 1) { current++; render(); }
+    });
 
-function stopReading() {
-    window.speechSynthesis.cancel();
-}
+    if (prevEl) prevEl.addEventListener("click", () => {
+        if (current > 0) { current--; render(); }
+    });
 
-function goBack() {
-    window.speechSynthesis.cancel();
-    window.location.href = "index.html";
-}
+    // Let the Cat code read the current page
+    window.getCurrentPageText = () => pages[current];
+
+    render();
+})();
+
 // ---------- Settings popup ----------
 function openSettings() {
     settingsOverlay.classList.remove("hidden");
@@ -72,14 +234,12 @@ function closeSettings() {
 if (settingsBtn) settingsBtn.addEventListener("click", openSettings);
 if (closeSettingsBtn) closeSettingsBtn.addEventListener("click", closeSettings);
 
-// Click the dark area outside the popup to close it
 if (settingsOverlay) {
     settingsOverlay.addEventListener("click", (e) => {
         if (e.target === settingsOverlay) closeSettings();
     });
 }
 
-// Escape key closes it too
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && settingsOverlay) closeSettings();
 });
@@ -92,14 +252,12 @@ function setTheme(theme) {
     });
 }
 
-// Load the saved theme (defaults to dark)
 let savedTheme = "dark";
 try {
     savedTheme = localStorage.getItem("theme") || "dark";
 } catch (e) {}
 setTheme(savedTheme);
 
-// Switch theme when a button is clicked
 themeBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
         setTheme(btn.dataset.theme);
@@ -110,14 +268,12 @@ themeBtns.forEach((btn) => {
 });
 
 // ---------- Font size ----------
+const MIN_SIZE = 12;
+const MAX_SIZE = 48;
+const STEP = 2;
 
-const MIN_SIZE = 12;  // px
-const MAX_SIZE = 48;  // px
-const STEP = 2;       // px per click
+let fontSize = 20;
 
-let fontSize = 20;    // default size in px (matches 1.25rem)
-
-// Load the saved size, if there is one
 try {
     const savedSize = parseInt(localStorage.getItem("fontSize"), 10);
     if (savedSize) fontSize = savedSize;
@@ -218,4 +374,5 @@ if (artBtn) {
         }
     });
 }
+
 

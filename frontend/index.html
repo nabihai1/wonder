@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
     <title>Wonder</title>
 </head>
 <body>
     <div class="header">
         <h1>Wonder</h1>
-        <div class="header-buttons">
-            <button id="settingsBtn">Settings</button>
-        </div>
+        <button id="settingsBtn">Settings</button>
     </div>
     <div class="main">
         <h2>Paste your own story</h2>
@@ -19,6 +20,11 @@
         <button id="openStoryBtn">Open Story</button>
         <input type="file" id="fileInput" accept=".txt" hidden>
         <button id="uploadBtn">Upload file</button>
+
+        <div class="button-row">
+            <button id="openStoryBtn">Open Story</button>
+            <button id="uploadBtn">Upload file</button>
+        </div>
     </div>
     <div class="footer"></div>
 
@@ -34,6 +40,7 @@
             <button id="closeSettingsBtn" class="close-btn">Close</button>
         </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
