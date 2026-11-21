@@ -133,3 +133,7 @@ textarea::placeholder {
     padding: 10px;
     margin: 0;
 }
+
+#storyText {
+    font-size: 1.25rem;
+}
