@@ -1,10 +1,8 @@
 const openStoryBtn = document.getElementById("openStoryBtn");
-const backBtn = document.getElementById("backBtn");
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsOverlay = document.getElementById("settingsOverlay");
 const closeSettingsBtn = document.getElementById("closeSettingsBtn");
 const themeBtns = document.querySelectorAll(".theme-btn");
-const storyText = document.getElementById("storyText");
 const storyDisplay = document.getElementById("story-display");
 
 const biggerBtn = document.getElementById("biggerBtn");
@@ -55,8 +53,6 @@ if (storyDisplay) {
 
     splitStory(story);
     displayPage();
-if (storyText) {
-    storyText.textContent = sessionStorage.getItem("story") || "No story yet.";
 }
 
 function displayPage() {
@@ -102,10 +98,6 @@ function stopReading() {
     window.speechSynthesis.cancel();
 }
 
-function goBack() {
-    window.speechSynthesis.cancel();
-    window.location.href = "index.html";
-}
 // ---------- Settings popup ----------
 function openSettings() {
     settingsOverlay.classList.remove("hidden");
@@ -170,8 +162,9 @@ try {
 } catch (e) {}
 
 function applyFontSize() {
-    if (storyText) storyText.style.fontSize = fontSize + "px";
-    if (storyDisplay) storyDisplay.style.fontSize = fontSize + "px";
+    if (storyDisplay) {
+        storyDisplay.style.fontSize = fontSize + "px";
+    }
 
     try {
         localStorage.setItem("fontSize", fontSize);
