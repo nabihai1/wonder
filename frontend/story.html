@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>Story</title>
+    <title>Wonder - Story</title>
 </head>
 <body>
     <div class="header">
@@ -14,29 +14,31 @@
         <button>Smaller</button>
         <button onclick="readStory()">Chesire Cat Reads</button>
         <button onclick="stopReading()">Stop</button>
+        <button>Cheshire Cat Reads</button>
+        <button id="settingsBtn">Settings</button>
     </div>
     <div class="main">
-        <p>Text</p>
+        <p id="storyText">Text</p>
     </div>
     <footer class="footer">
-        <button>Back</button>
+        <button id="backBtn">Back</button>
         <div class="page-indicator">
             <p>Page 1 of 1</p>
             <button></button>
             <button>Next</button>
         </div>
     </footer>
-    <title>Wonder - Story</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="header">
-        <h1>Wonder</h1>
-        <div class="header-buttons">
-            <button id="backBtn">Back</button> 
-            <div class="settings-wrapper">
-                <button id="settingsBtn">Settings</button>
+
+    <!-- Settings popup -->
+    <div id="settingsOverlay" class="overlay hidden">
+        <div class="modal">
+            <h2>Settings</h2>
+            <p>Appearance</p>
+            <div class="theme-options">
+                <button class="theme-btn" data-theme="dark">Dark mode</button>
+                <button class="theme-btn" data-theme="light">Light mode</button>
             </div>
+            <button id="closeSettingsBtn" class="close-btn">Close</button>
         </div>
     </div>
     <div class="main">

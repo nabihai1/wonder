@@ -1,8 +1,24 @@
+/* Dark mode (default) = your current colors */
+:root {
+    --bg: #13386B;
+    --text: #ffffff;
+    --modal-bg: #1d4a87;
+    --modal-border: rgba(255, 255, 255, 0.4);
+}
+
+/* Light mode */
+:root[data-theme="light"] {
+    --bg: #E5FCFF;
+    --text: #13386B;
+    --modal-bg: #E5FCFF;
+    --modal-border: rgba(19, 56, 107, 0.4);
+}
+
 body {
     display: flex;
     flex-direction: column;
-    background: #13386B;
-    color: white;
+    background: var(--bg);
+    color: var(--text);
     justify-content: center;
     align-items: center;
     height: 100vh;
@@ -22,13 +38,20 @@ body {
 
 .footer {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
+h1 {
+    padding: 1rem;
+}
+
+/* General buttons */
 button {
     background: transparent;
-    color: white;
+    color: var(--text);
     outline: none;
-    border: 2px solid white;
+    border: 2px solid var(--text);
     border-radius: 20px;
     padding: 0.5rem;
     margin: 2rem;
@@ -58,5 +81,55 @@ textarea::placeholder {
     color: lightgray;
 }
     /* justify-content: space-between;
+/* Popup */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
     align-items: center;
-} */
+    justify-content: center;
+    z-index: 100;
+}
+
+.overlay.hidden {
+    display: none;
+}
+
+.modal {
+    background: var(--modal-bg);
+    color: var(--text);
+    padding: 24px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 320px;
+}
+
+.modal h2 {
+    margin-top: 0;
+}
+
+.theme-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.theme-btn {
+    flex: 1;
+    padding: 10px;
+    margin: 0;
+    border: 2px solid var(--modal-border);
+    border-radius: 8px;
+}
+
+.theme-btn.active {
+    border-color: var(--text);
+    font-weight: bold;
+}
+
+.close-btn {
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+}
