@@ -7,6 +7,8 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    padding: 24px;
+    box-sizing: border-box;
 }
 
 .header {
@@ -38,4 +40,7 @@ button:hover {
 
 h1 {
     padding: 1rem;
+}
+    justify-content: space-between;
+    align-items: center;
 }
