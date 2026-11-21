@@ -1,10 +1,8 @@
 const openStoryBtn = document.getElementById("openStoryBtn");
-const backBtn = document.getElementById("backBtn");
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsOverlay = document.getElementById("settingsOverlay");
 const closeSettingsBtn = document.getElementById("closeSettingsBtn");
 const themeBtns = document.querySelectorAll(".theme-btn");
-const storyText = document.getElementById("storyText");
 const storyDisplay = document.getElementById("story-display");
 
 const biggerBtn = document.getElementById("biggerBtn");
@@ -16,38 +14,87 @@ const catBtn = document.getElementById("catBtn");
 
 // ---------- Page navigation ----------
 
+let pages = [];
+let currentPage = 0;
+
+function splitStory(text) {
+    const words = text.trim().split(/\s+/);
+    pages = [];
+
+    for (let i = 0; i < words.length; i += 4) {
+        pages.push(words.slice(i, i + 4).join(" "));
+    }
+}
+
 // index.html -> story.html
 if (openStoryBtn) {
     openStoryBtn.addEventListener("click", () => {
         const story = document.getElementById("story-input").value;
-        sessionStorage.setItem("story", story); // save it for the next page
-        window.location.href = "story.html";
-    });
-}
 
-// story.html -> index.html
-if (mainBtn) {
-    mainBtn.addEventListener("click", () => {
-        window.location.href = "index.html";
+        if (!story.trim()) {
+            alert("Please enter a story first!");
+            return;
+        }
+
+        sessionStorage.setItem("story", story);
+        window.location.href = "story.html";
     });
 }
 
 // On story.html, show the saved story
 
-if (storyText) {
-    storyText.textContent = sessionStorage.getItem("story") || "No story yet.";
+if (mainBtn) {
+    mainBtn.addEventListener("click", () => {
+        window.speechSynthesis.cancel();
+        window.location.href = "index.html";
+    });
 }
 
 if (storyDisplay) {
-    storyDisplay.textContent = localStorage.getItem("story") || "";
+    const story = sessionStorage.getItem("story") || "";
+
+    splitStory(story);
+    displayPage();
 }
 
+function displayPage() {
+    if (!storyDisplay) return;
+
+    storyDisplay.textContent = pages[currentPage] || "";
+
+    const indicator = document.getElementById("page-indicator");
+
+    if (indicator) {
+        indicator.textContent =
+            `Page ${currentPage + 1} of ${pages.length}`;
+    }
+}
+
+function nextPage() {
+    if (currentPage < pages.length - 1) {
+        currentPage++;
+        displayPage();
+    }
+}
+
+function previousPage() {
+    if (currentPage > 0) {
+        currentPage--;
+        displayPage();
+    }
+}
+
+<<<<<<< HEAD
 // ---------- Reading + highlighting ----------
 let wordSpans = [];
 let wordStarts = [];
 let highlightTimer = null;
 let usingRealBoundaries = false;
 let currentUtterance = null;
+=======
+function readStory() {
+    const text = pages[currentPage];
+>>>>>>> 2e3d30df43618992174cf003ad5cac6181f67d2d
 
 const MS_PER_CHAR = 70;   // raise if highlight runs ahead of the voice, lower if it lags
 
@@ -184,6 +231,7 @@ if (catBtn) {
     });
 }
 
+<<<<<<< HEAD
 // Stop talking if the person leaves the page
 window.addEventListener("beforeunload", () => window.speechSynthesis.cancel());
 
@@ -191,6 +239,8 @@ function goBack() {
     window.speechSynthesis.cancel();
     window.location.href = "index.html";
 }
+=======
+>>>>>>> 2e3d30df43618992174cf003ad5cac6181f67d2d
 // ---------- Settings popup ----------
 function openSettings() {
     settingsOverlay.classList.remove("hidden");
@@ -255,7 +305,10 @@ try {
 } catch (e) {}
 
 function applyFontSize() {
-    if (storyText) storyText.style.fontSize = fontSize + "px";
+    if (storyDisplay) {
+        storyDisplay.style.fontSize = fontSize + "px";
+    }
+
     try {
         localStorage.setItem("fontSize", fontSize);
     } catch (e) {}
