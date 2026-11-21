@@ -33,7 +33,7 @@ if (mainBtn) {
 // On story.html, show the saved story
 
 if (storyText) {
-    storyText.textContent = localStorage.getItem("story") || "No story yet.";
+    storyText.textContent = sessionStorage.getItem("story") || "No story yet.";
 }
 
 if (storyDisplay) {

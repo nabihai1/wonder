@@ -1,3 +1,5 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Alice&display=swap'); */
+
 /* Dark mode (default) = your current colors */
 :root {
     --bg: #13386B;
@@ -15,6 +17,7 @@
 }
 
 body {
+    font-family: "Alice", serif;
     display: flex;
     flex-direction: column;
     background: var(--bg);
@@ -55,6 +58,7 @@ button {
     border-radius: 20px;
     padding: 0.5rem;
     margin: 2rem;
+    font-family: inherit;   /* was: font: alice; */
 }
 
 button:hover {
@@ -75,6 +79,7 @@ textarea {
     padding: 1rem;
     font-size: 1rem;
     resize: none;
+    font-family: inherit;
 }
 
 textarea::placeholder {
@@ -137,4 +142,10 @@ textarea::placeholder {
 
 #storyText {
     font-size: 1.25rem;
+}
+
+.alice-regular {
+  font-family: "Alice", serif;
+  font-weight: 400;
+  font-style: normal;
 }
