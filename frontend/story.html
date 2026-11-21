@@ -10,10 +10,10 @@
     <div class="header">
         <h1>Wonder</h1>
         <div class="header-buttons">
-            <button id="backBtn">Back</button> 
             <div class="settings-wrapper">
                 <button id="settingsBtn">Settings</button>
             </div>
+            <button id="backBtn">Back</button> 
         </div>
     </div>
     <div class="main">
@@ -21,7 +21,17 @@
         <p id="storyText"></p>
     </div>
     <div class="footer"></div>
-
+    <div id="settingsOverlay" class="overlay hidden">
+        <div class="modal">
+            <h2>Settings</h2>
+            <p>Appearance</p>
+            <div class="theme-options">
+                <button class="theme-btn" data-theme="dark">Dark mode</button>
+                <button class="theme-btn" data-theme="light">Light mode</button>
+            </div>
+            <button id="closeSettingsBtn" class="close-btn">Close</button>
+        </div>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
