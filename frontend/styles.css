@@ -3,12 +3,39 @@ body {
     flex-direction: column;
     background: #13386B;
     color: white;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
 .header {
     display: flex;
+    margin: 1rem;
+}
+
+.main {
+    flex: 1;
 }
 
 .footer {
     display: flex;
+}
+
+button {
+    background: transparent;
+    color: white;
+    outline: none;
+    border: 2px solid white;
+    border-radius: 20px;
+    padding: 0.5rem;
+    margin: 2rem;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+h1 {
+    padding: 1rem;
 }
