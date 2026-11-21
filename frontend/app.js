@@ -25,4 +25,22 @@ if (storyText) {
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsPanel = document.getElementById("settingsPanel");
 
+function readStory() {
+    const text = document.getElementById("story-input").value;
 
+    if (!text.trim()) return;
+
+    window.speechSynthesis.cancel();
+
+    const speech = new SpeechSynthesisUtterance(text);
+
+    speech.rate = 1;
+    speech.pitch = 1;
+    speech.volume = 1;
+
+    window.speechSynthesis.speak(speech);
+}
+
+function stopReading() {
+    window.speechSynthesis.cancel();
+}

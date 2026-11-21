@@ -41,6 +41,22 @@ button:hover {
 h1 {
     padding: 1rem;
 }
+
+textarea {
+    width: 80%;
+    height: 200px;
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 1rem;
+    font-size: 1rem;
+    resize: none;
+}
+
+textarea::placeholder {
+    color: lightgray;
+}
     /* justify-content: space-between;
     align-items: center;
 } */
