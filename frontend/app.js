@@ -17,8 +17,8 @@ if (makePagesBtn) {
 }
 
 // story.html -> index.html
-if (backBtn) {
-    backBtn.addEventListener("click", () => {
+if (mainBtn) {
+    mainBtn.addEventListener("click", () => {
         window.location.href = "index.html";
     });
 }
@@ -77,3 +77,42 @@ themeBtns.forEach((btn) => {
         } catch (e) {}
     });
 });
+
+// ---------- Font size ----------
+const biggerBtn = document.getElementById("biggerBtn");
+const smallerBtn = document.getElementById("smallerBtn");
+
+const MIN_SIZE = 12;  // px
+const MAX_SIZE = 48;  // px
+const STEP = 2;       // px per click
+
+let fontSize = 20;    // default size in px (matches 1.25rem)
+
+// Load the saved size, if there is one
+try {
+    const savedSize = parseInt(localStorage.getItem("fontSize"), 10);
+    if (savedSize) fontSize = savedSize;
+} catch (e) {}
+
+function applyFontSize() {
+    if (storyText) storyText.style.fontSize = fontSize + "px";
+    try {
+        localStorage.setItem("fontSize", fontSize);
+    } catch (e) {}
+}
+
+applyFontSize();
+
+if (biggerBtn) {
+    biggerBtn.addEventListener("click", () => {
+        fontSize = Math.min(fontSize + STEP, MAX_SIZE);
+        applyFontSize();
+    });
+}
+
+if (smallerBtn) {
+    smallerBtn.addEventListener("click", () => {
+        fontSize = Math.max(fontSize - STEP, MIN_SIZE);
+        applyFontSize();
+    });
+}
