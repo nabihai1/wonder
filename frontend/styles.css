@@ -22,6 +22,8 @@ body {
 
 .footer {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 button {
@@ -41,6 +43,3 @@ button:hover {
 h1 {
     padding: 1rem;
 }
-    /* justify-content: space-between;
-    align-items: center;
-} */
