@@ -1,4 +1,4 @@
-const makePagesBtn = document.getElementById("makePagesBtn");
+const openStoryBtn = document.getElementById("openStoryBtn");
 const backBtn = document.getElementById("backBtn");
 const settingsBtn = document.getElementById("settingsBtn");
 const settingsOverlay = document.getElementById("settingsOverlay");
@@ -8,8 +8,8 @@ const themeBtns = document.querySelectorAll(".theme-btn");
 // ---------- Page navigation ----------
 
 // index.html -> story.html
-if (makePagesBtn) {
-    makePagesBtn.addEventListener("click", () => {
+if (openStoryBtn) {
+    openStoryBtn.addEventListener("click", () => {
         const story = document.getElementById("story-input").value;
         sessionStorage.setItem("story", story); // save it for the next page
         window.location.href = "story.html";
@@ -28,20 +28,6 @@ const storyText = document.getElementById("storyText");
 if (storyText) {
     storyText.textContent = sessionStorage.getItem("story") || "No story yet.";
 }
-
-function openStory() {
-    const text = document.getElementById("story-input").value;
-
-    if (!text.trim()) {
-        alert("Please paste a story first!");
-        return;
-    }
-
-    localStorage.setItem("story", text);
-
-    window.location.href = "story.html";
-}
-
 const storyDisplay = document.getElementById("story-display");
     if (storyDisplay) {
         storyDisplay.textContent = localStorage.getItem("story") || "";
