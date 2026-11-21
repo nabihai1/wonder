@@ -55,6 +55,8 @@ if (storyDisplay) {
 
     splitStory(story);
     displayPage();
+if (storyText) {
+    storyText.textContent = sessionStorage.getItem("story") || "No story yet.";
 }
 
 function displayPage() {
