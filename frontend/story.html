@@ -13,18 +13,26 @@
     <div class="header">
         <button id="mainBtn">Main Menu</button>
         <h1>Wonder</h1>
-        <button id="biggerBtn">Bigger</button>
-        <button id="smallerBtn">Smaller</button>
-        <button id="catBtn">Cheshire Cat Reads</button>
-        <button id="settingsBtn">Settings</button>
+        <div class="header-buttons">
+            <button id="catBtn">Cheshire Cat Reads</button>
+            <button id="settingsBtn">Settings</button>
+        </div>
     </div>
+
     <div class="main">
-        <p id="story-display"></p>
+        <div class="story-wrap">
+            <p id="story-display"></p>
+            <div class="text-controls">
+                <button id="smallerBtn" aria-label="Smaller text">Smaller</button>
+                <button id="biggerBtn" aria-label="Bigger text">Bigger</button>
+            </div>
+        </div>
     </div>
+
     <footer class="footer">
-        <button id="backBtn" onclick="previousPage()">Back</button>
+        <button id="backBtn">Back</button>
         <p id="page-indicator">Page 1 of 1</p>
-        <button id="nextBtn" onclick="nextPage()">Next</button>
+        <button id="nextBtn">Next</button>
     </footer>
 
     <!-- Settings popup -->
