@@ -10,21 +10,18 @@
     <div class="header">
         <h1>Wonder</h1>
         <div class="header-buttons">
-            <div class="settings-wrapper">
-                <button id="settingsBtn">Settings</button>
-            </div>
+            <button id="settingsBtn">Settings</button>
         </div>
     </div>
     <div class="main">
         <h2>Paste your own story</h2>
         <textarea id="story-input" placeholder="Paste your story here..."></textarea>
-        <button>Make pages</button>
+        <button id="makePagesBtn">Make pages</button>
         <button>Upload file</button>
     </div>
-    <div class="footer">
-
-    </div>
     <div class="footer"></div>
+
+    <!-- Settings popup -->
     <div id="settingsOverlay" class="overlay hidden">
         <div class="modal">
             <h2>Settings</h2>
@@ -36,6 +33,7 @@
             <button id="closeSettingsBtn" class="close-btn">Close</button>
         </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>

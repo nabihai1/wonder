@@ -1,10 +1,16 @@
 const makePagesBtn = document.getElementById("makePagesBtn");
 const backBtn = document.getElementById("backBtn");
+const settingsBtn = document.getElementById("settingsBtn");
+const settingsOverlay = document.getElementById("settingsOverlay");
+const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+const themeBtns = document.querySelectorAll(".theme-btn");
+
+// ---------- Page navigation ----------
 
 // index.html -> story.html
 if (makePagesBtn) {
     makePagesBtn.addEventListener("click", () => {
-        const story = document.getElementById("storyInput").value;
+        const story = document.getElementById("story-input").value;
         sessionStorage.setItem("story", story); // save it for the next page
         window.location.href = "story.html";
     });
@@ -22,12 +28,8 @@ const storyText = document.getElementById("storyText");
 if (storyText) {
     storyText.textContent = sessionStorage.getItem("story") || "No story yet.";
 }
-const settingsBtn = document.getElementById("settingsBtn");
-const settingsPanel = document.getElementById("settingsPanel");
 
-const settingsOverlay = document.getElementById("settingsOverlay");
-const closeSettingsBtn = document.getElementById("closeSettingsBtn");
-
+// ---------- Settings popup ----------
 function openSettings() {
     settingsOverlay.classList.remove("hidden");
 }
@@ -36,21 +38,22 @@ function closeSettings() {
     settingsOverlay.classList.add("hidden");
 }
 
-settingsBtn.addEventListener("click", openSettings);
-closeSettingsBtn.addEventListener("click", closeSettings);
+if (settingsBtn) settingsBtn.addEventListener("click", openSettings);
+if (closeSettingsBtn) closeSettingsBtn.addEventListener("click", closeSettings);
 
 // Click the dark area outside the popup to close it
-settingsOverlay.addEventListener("click", (e) => {
-    if (e.target === settingsOverlay) closeSettings();
-});
+if (settingsOverlay) {
+    settingsOverlay.addEventListener("click", (e) => {
+        if (e.target === settingsOverlay) closeSettings();
+    });
+}
 
 // Escape key closes it too
 document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeSettings();
+    if (e.key === "Escape" && settingsOverlay) closeSettings();
 });
 
-const themeBtns = document.querySelectorAll(".theme-btn");
-
+// ---------- Theme ----------
 function setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     themeBtns.forEach((btn) => {
