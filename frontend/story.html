@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alice&display=swap" rel="stylesheet">
     <title>Wonder - Story</title>
 </head>
@@ -13,11 +13,11 @@
     <div class="header">
         <button id="mainBtn">Main Menu</button>
         <h1>Wonder</h1>
-        <button id="catBtn">Cheshire Cat Reads</button>
-        <button id="settingsBtn">Settings</button>
-        
-        <button id="cookieJarBtn" class="cookie-jar-btn">
-            🫙 🍪<span id="cookieCount">0</span> </button>
+        <div class="header-buttons">
+            <button id="catBtn">Cheshire Cat Reads</button>
+        <button id="artBtn">View the Scene</button>
+            <button id="settingsBtn">Settings</button>
+        </div>
     </div>
 
     <div class="main">
@@ -25,6 +25,8 @@
         <div class="story-wrap">
             <p id="story-display"></p>
             <div class="text-controls">
+                <button id="catBtn">Cheshire Cat Reads</button>
+                <button id="artBtn">View the Scene</button>
                 <button id="smallerBtn" aria-label="Smaller text">Smaller</button>
                 <button id="biggerBtn" aria-label="Bigger text">Bigger</button>
             </div>
@@ -47,6 +49,12 @@
             <div class="theme-options">
                 <button class="theme-btn" data-theme="dark">Dark mode</button>
                 <button class="theme-btn" data-theme="light">Light mode</button>
+            </div>
+            <p>Reading speed</p>
+            <div class="theme-options">
+                <button class="speed-btn" data-rate="0.7">Slow</button>
+                <button class="speed-btn" data-rate="0.95">Normal</button>
+                <button class="speed-btn" data-rate="1.3">Fast</button>
             </div>
             <button id="closeSettingsBtn" class="close-btn">Close</button>
         </div>

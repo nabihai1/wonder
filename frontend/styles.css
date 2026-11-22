@@ -181,14 +181,17 @@ button:disabled:hover {
     gap: 8px;
 }
 
-.text-controls button {
-    padding: 16px 38px;
-    font-size: 1.5rem;
+.text-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
 }
 
 .text-controls button {
     padding: 12px 32px;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
 }
 
 /* Upload file is a softer, secondary button next to Open Story */
@@ -372,4 +375,19 @@ textarea::placeholder {
     display: flex;
     flex-direction: column;
     gap: 16px;
+}
+
+.speed-btn {
+    flex: 1;
+    padding: 14px;
+    font-size: 1.2rem;
+    border: 2px solid var(--modal-border);
+    border-radius: 12px;
+}
+
+.speed-btn.active,
+.theme-btn.active {
+    border-color: var(--accent);
+    background: var(--hover);
+    font-weight: bold;
 }

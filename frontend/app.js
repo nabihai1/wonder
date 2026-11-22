@@ -11,6 +11,17 @@ const storyText = document.getElementById("story-display");
 const biggerBtn = document.getElementById("biggerBtn");
 const smallerBtn = document.getElementById("smallerBtn");
 const catBtn = document.getElementById("catBtn");
+const storyInput = document.getElementById("story-input");
+
+// Load previously entered text
+if (storyInput) {
+    storyInput.value = localStorage.getItem("savedStory") || "";
+
+    // Save text whenever the user types
+    storyInput.addEventListener("input", () => {
+        localStorage.setItem("savedStory", storyInput.value);
+    });
+}
 
 // ---------- Reading + highlighting ----------
 let wordSpans = [];
@@ -19,7 +30,7 @@ let highlightTimer = null;
 let usingRealBoundaries = false;
 let currentUtterance = null;
 
-const MS_PER_CHAR = 70;
+const MS_PER_CHAR = 70;   // raise if highlight runs ahead of the voice, lower if it lags
 
 function renderWords(text) {
     storyText.textContent = "";
@@ -102,6 +113,31 @@ function loadCatVoice() {
 loadCatVoice();
 window.speechSynthesis.addEventListener("voiceschanged", loadCatVoice);
 
+// ---------- Reading speed ----------
+const speedBtns = document.querySelectorAll(".speed-btn");
+let readingRate = 0.95;
+
+try {
+    const savedRate = parseFloat(localStorage.getItem("readingRate"));
+    if (savedRate) readingRate = savedRate;
+} catch (e) {}
+
+function setSpeed(rate) {
+    readingRate = rate;
+    speedBtns.forEach((btn) => {
+        btn.classList.toggle("active", parseFloat(btn.dataset.rate) === rate);
+    });
+    try {
+        localStorage.setItem("readingRate", rate);
+    } catch (e) {}
+}
+
+setSpeed(readingRate);
+
+speedBtns.forEach((btn) => {
+    btn.addEventListener("click", () => setSpeed(parseFloat(btn.dataset.rate)));
+});
+
 function readStory() {
     if (!storyText) return;
     stopReading();
@@ -116,7 +152,7 @@ function readStory() {
 
     if (catVoice) speech.voice = catVoice;
     speech.pitch = 1.3;
-    speech.rate = 0.95;
+    speech.rate = readingRate;
 
     speech.onstart = () => {
         if (currentUtterance !== speech) return;
@@ -364,7 +400,7 @@ themeBtns.forEach((btn) => {
 
 // ---------- Font size ----------
 const MIN_SIZE = 12;
-const MAX_SIZE = 48;
+const MAX_SIZE = 100;
 const STEP = 2;
 
 let fontSize = 20;
@@ -396,3 +432,78 @@ if (smallerBtn) {
         applyFontSize();
     });
 }
+
+//------------------file upload-----------------------------------
+const uploadBtn = document.getElementById("uploadBtn");
+const fileInput = document.getElementById("fileInput");
+
+if (uploadBtn) {
+    uploadBtn.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", async () => {
+        const file = fileInput.files[0];
+        if (!file) return;
+        localStorage.setItem("story", await file.text());
+        window.location.href = "story.html";
+    });
+}
+
+//-------------------------ascii art--------------------------
+
+const artBtn = document.getElementById("artBtn");
+const asciiArt = document.getElementById("asciiArt");
+
+async function makeAsciiArt(text) {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+            "x-api-key": API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+            "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+            model: "claude-sonnet-5-5",
+            max_tokens: 1024,
+            messages: [{
+                role: "user",
+                content: "Draw a kid-friendly ASCII art picture of the main scene in this story. " +
+                         "Keep it under 30 lines and 60 characters wide. " +
+                         "Reply with ONLY the ASCII art, no explanation.\n\n" + text
+            }]
+        })
+    });
+    const data = await res.json();
+    return data.content[0].text;
+}
+
+function catFrame(i) {
+    const paint = ["~", "~*", "~*~", "~*~*"][i % 4];
+    const dots = ".".repeat(i % 4);
+    return " /\\_/\\\n" +
+           "( ^‿^ )__/ " + paint + "\n" +
+           "  > ^ <\n\n" +
+           "The Cheshire Cat is drawing" + dots;
+}
+
+if (artBtn) {
+    artBtn.addEventListener("click", async () => {
+        let i = 0;
+        asciiArt.textContent = catFrame(i);
+        const loading = setInterval(() => {
+            i++;
+            asciiArt.textContent = catFrame(i);
+        }, 300);
+
+        try {
+            const art = await makeAsciiArt(localStorage.getItem("story"));
+            clearInterval(loading);
+            asciiArt.textContent = art;
+        } catch (e) {
+            clearInterval(loading);
+            asciiArt.textContent = "Couldn't draw the scene.";
+            console.error(e);
+        }
+    });
+}
+
+
