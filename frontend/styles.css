@@ -155,6 +155,12 @@ textarea {
     resize: none;
     box-shadow: 0 6px 18px var(--shadow);
 }
+
+textarea:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+}
+
 button:disabled {
     opacity: 0.4;
     cursor: not-allowed;

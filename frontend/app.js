@@ -13,6 +13,42 @@ const smallerBtn = document.getElementById("smallerBtn");
 const catBtn = document.getElementById("catBtn");
 const storyInput = document.getElementById("story-input");
 
+// ---------- Story id + rewards ----------
+function getStoryId() {
+    const text = localStorage.getItem("story") || "";
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+        hash = (hash * 31 + text.charCodeAt(i)) | 0;
+    }
+    return String(hash);
+}
+
+// Returns true only the first time a reward is earned for this story
+function awardCookies(reason, amount) {
+    const flag = `reward_${reason}_${getStoryId()}`;
+    if (localStorage.getItem(flag)) return false;
+    localStorage.setItem(flag, "1");
+    const total = parseInt(localStorage.getItem("cookies"), 10) || 0;
+    localStorage.setItem("cookies", String(total + amount));
+    return true;
+}
+
+const rewardsOverlay = document.getElementById("rewardsOverlay");
+const closeRewardBtn = document.getElementById("closeRewardBtn");
+
+function showReward(title, message) {
+    if (!rewardsOverlay) return;
+    document.getElementById("rewardTitle").textContent = title;
+    document.getElementById("rewardMessage").textContent = message;
+    rewardsOverlay.classList.remove("hidden");
+}
+
+if (closeRewardBtn) {
+    closeRewardBtn.addEventListener("click", () => {
+        rewardsOverlay.classList.add("hidden");
+    });
+}
+
 // Load previously entered text
 if (storyInput) {
     storyInput.value = localStorage.getItem("savedStory") || "";
@@ -369,7 +405,7 @@ if (mainBtn) {
     function render() {
     stopReading();
 
-    textEl.textContent = pages[current];
+    renderWords(pages[current]);
 
     if (labelEl) {
         labelEl.textContent =
