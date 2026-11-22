@@ -19,13 +19,23 @@
         <button id="settingsBtn">Settings</button>
         <div class="cookie-counter"> 🍪 <span id="cookieCount">0</span> Cookies </div>
     </div>
+
     <div class="main">
-        <p id="story-display"></p>
+        <div class="story-wrap">
+            <p id="story-display"></p>
+            <div class="text-controls">
+                <button id="smallerBtn" aria-label="Smaller text">Smaller</button>
+                <button id="biggerBtn" aria-label="Bigger text">Bigger</button>
+            </div>
+        </div>
     </div>
+
     <footer class="footer">
-        <button id="backBtn" onclick="previousPage()">Back</button>
+        <button id="backBtn">Back</button>
         <p id="page-indicator">Page 1 of 1</p>
-        <button id="nextBtn" onclick="nextPage()">Next</button>
+        <button id="nextBtn">Next</button>
+        <button id="saveStoryBtn"> Save & Leave 🍪</button>
+        <button id="finishStoryBtn" style="display: none;"> Finish Story 🎉</button>"
     </footer>
 
     <!-- Settings popup -->
@@ -41,6 +51,14 @@
         </div>
     </div>
 
+    <!--Rewards System celebration popup -->
+    <div id="rewardsOverlay" class="overlay hidden">
+        <div class="modal reward-modal">
+            <h2 id="rewardTitle">Congratualtions! 🎉</h2>
+            <p id="rewardMessage"></p>
+            <button id="closeRewardBtn">Continue</button>
+        </div>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>

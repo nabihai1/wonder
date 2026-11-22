@@ -12,15 +12,15 @@
 <body>
     <div class="header">
         <h1>Wonder</h1>
-        <div class="header-buttons">
-            <button id="settingsBtn">Settings</button>
-        </div>
+        <button id="settingsBtn">Settings</button>
     </div>
     <div class="main">
         <h2>Paste your own story</h2>
         <textarea id="story-input" placeholder="Paste your story here..."></textarea>
-        <button id="openStoryBtn">Open Story</button>
-        <button>Upload file</button>
+        <div class="button-row">
+            <button id="openStoryBtn">Open Story</button>
+            <button id="uploadBtn">Upload file</button>
+        </div>
     </div>
     <div class="footer"></div>
 
@@ -36,6 +36,7 @@
             <button id="closeSettingsBtn" class="close-btn">Close</button>
         </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
