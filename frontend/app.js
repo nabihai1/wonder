@@ -304,11 +304,21 @@ window.addEventListener("beforeunload", () => window.speechSynthesis.cancel());
 if (openStoryBtn) {
     openStoryBtn.addEventListener("click", () => {
         const story = document.getElementById("story-input").value;
-        // save in both places so every version of the story page can find it
+
+        if (!story.trim()) {
+            alert("Please enter a story first!");
+            return;
+        }
+
         try {
             localStorage.setItem("story", story);
             sessionStorage.setItem("story", story);
-        } catch (e) {}
+
+            awardCookies("booked", 1);
+        } catch (error) {
+            console.error("Could not save story:", error);
+        }
+
         window.location.href = "story.html";
     });
 }
@@ -344,15 +354,46 @@ if (mainBtn) {
     }
     if (pages.length === 0) pages.push("No story yet.");
 
-    let current = 0;
+    //let current = 0;
+    const storyId = getStoryId();
+
+    const savedPage = Number(
+    localStorage.getItem("savedPage_" + storyId)
+    );
+
+    let current = Number.isInteger(savedPage)
+    ? Math.max(0, Math.min(savedPage, pages.length - 1))
+    : 0;
+
 
     function render() {
-        if (typeof stopReading === "function") stopReading(); // stop the Cat on page change
-        renderWords(pages[current]);
-        if (labelEl) labelEl.textContent = `Page ${current + 1} of ${pages.length}`;
-        if (prevEl) prevEl.disabled = current === 0;
-        if (nextEl) nextEl.disabled = current === pages.length - 1;
+    stopReading();
+
+    textEl.textContent = pages[current];
+
+    if (labelEl) {
+        labelEl.textContent =
+            `Page ${current + 1} of ${pages.length}`;
     }
+
+    if (prevEl) {
+        prevEl.disabled = current === 0;
+    }
+
+    if (nextEl) {
+        nextEl.disabled = current === pages.length - 1;
+    }
+
+    const finishBtn = document.getElementById("finishStoryBtn");
+
+    if (finishBtn) {
+        finishBtn.style.display =
+            current === pages.length - 1 && saved.trim()
+                ? "inline-block"
+                : "none";
+    }
+}
+
 
     if (nextEl) nextEl.addEventListener("click", () => {
         if (current < pages.length - 1) { current++; render(); }
@@ -362,10 +403,64 @@ if (mainBtn) {
         if (current > 0) { current--; render(); }
     });
 
-    // Let the Cat code read the current page
+    // // Let the Cat code read the current page
+    // window.getCurrentPageText = () => pages[current];
+
+    // render();
+
     window.getCurrentPageText = () => pages[current];
 
+// ---------- Finish Story ----------
+const finishBtn = document.getElementById("finishStoryBtn");
+
+if (finishBtn) {
+    finishBtn.addEventListener("click", () => {
+        if (current !== pages.length - 1 || !saved.trim()) {
+            return;
+        }
+
+        const earned = awardCookies("completed", 5);
+
+        if (earned) {
+            showReward(
+                "🎉 Congratulations!",
+                "You finished your story and earned 5 cookies! 🍪"
+            );
+        } else {
+            showReward(
+                "Amazing Reader! 📖",
+                "You've already earned your completion reward!"
+            );
+        }
+    });
+}
+
+// ---------- Save and Leave ----------
+const saveBtn = document.getElementById("saveStoryBtn");
+
+if (saveBtn) {
+    saveBtn.addEventListener("click", () => {
+        if (!saved.trim()) return;
+
+        localStorage.setItem(
+            "savedPage_" + storyId,
+            String(current)
+        );
+
+        const earned = awardCookies("saved", 1);
+
+        alert(
+            earned
+                ? "Progress saved! You earned 1 cookie! 🍪"
+                : "Your progress has been saved! 📖"
+        );
+
+        stopReading();
+        window.location.href = "index.html";
+    });
+}
     render();
+
 })();
 
 // ---------- Settings popup ----------
