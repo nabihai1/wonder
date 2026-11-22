@@ -75,7 +75,7 @@ h1 {
 }
 
 h2 {
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
 }
 
 /* ---------- Layout ---------- */
@@ -112,7 +112,7 @@ h2 {
 
 .footer p {
     margin: 0;
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     letter-spacing: 0.05em;
 }
 
@@ -122,10 +122,10 @@ button {
     color: var(--text);
     border: 2px solid var(--text);
     border-radius: 999px;
-    padding: 14px 30px;      /* was 8px 18px */
+    padding: 8px 18px;
     margin: 0;
     font-family: inherit;
-    font-size: 1.3rem;       /* was 1rem */
+    font-size: 1rem;
     cursor: pointer;
     transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
@@ -181,9 +181,9 @@ button:disabled:hover {
     gap: 8px;
 }
 
-.text-controls button {
-    padding: 16px 38px;
-    font-size: 1.5rem;
+.text-controls {
+    display: flex;
+    justify-content: space-between;   /* Smaller left, Bigger right */
 }
 
 .text-controls button {
@@ -255,7 +255,7 @@ textarea::placeholder {
 
 /* ---------- Story page ---------- */
 #story-display {
-    width: 100%;   /* was: min(90%, 720px) */
+    width: min(90%, 720px);
     min-height: 200px;
     margin: 0;
     padding: 48px 40px;
@@ -323,23 +323,22 @@ textarea::placeholder {
 
 .theme-btn {
     flex: 1;
-    padding: 14px;
-    font-size: 1.2rem;
+    padding: 10px;
     border: 2px solid var(--modal-border);
     border-radius: 12px;
 }
 
+.theme-btn.active {
+    border-color: var(--accent);
+    background: var(--hover);
+    font-weight: bold;
+}
+
 .close-btn {
     width: 100%;
-    padding: 14px;
-    font-size: 1.2rem;
+    padding: 10px;
 }
 
-#storyText {
-    font-size: 1.25rem;
-}
-
-#asciiArt { font-family: monospace; line-height: 1.1; white-space: pre; }
 /* ---------- Small screens ---------- */
 @media (max-width: 600px) {
     body {
