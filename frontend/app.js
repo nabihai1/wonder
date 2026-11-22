@@ -13,6 +13,68 @@ const smallerBtn = document.getElementById("smallerBtn");
 const catBtn = document.getElementById("catBtn");
 const storyInput = document.getElementById("story-input");
 
+// ---------- Story id + rewards ----------
+function getStoryId() {
+    const text = localStorage.getItem("story") || "";
+    let hash = 0;
+    for (let i = 0; i < text.length; i++) {
+        hash = (hash * 31 + text.charCodeAt(i)) | 0;
+    }
+    return String(hash);
+}
+
+// Returns true only the first time a reward is earned for this story
+// function awardCookies(reason, amount) {
+//     const flag = `reward_${reason}_${getStoryId()}`;
+//     if (localStorage.getItem(flag)) return false;
+//     localStorage.setItem(flag, "1");
+//     const total = parseInt(localStorage.getItem("cookies"), 10) || 0;
+//     localStorage.setItem("cookies", String(total + amount));
+//     return true;
+// }
+
+function updateCookieCounter() {
+    const total = parseInt(localStorage.getItem("cookies"), 10) || 0;
+
+    const counter = document.getElementById("cookieCount");
+    const jarCounter = document.getElementById("jarCookieCount");
+
+    if (counter) counter.textContent = total;
+    if (jarCounter) jarCounter.textContent = `${total} Cookies`;
+}
+
+function awardCookies(reason, amount) {
+    const flag = `reward_${reason}_${getStoryId()}`;
+
+    if (localStorage.getItem(flag)) return false;
+
+    localStorage.setItem(flag, "1");
+
+    const total = parseInt(localStorage.getItem("cookies"), 10) || 0;
+    localStorage.setItem("cookies", String(total + amount));
+
+    updateCookieCounter();
+    return true;
+}
+
+updateCookieCounter();
+
+const rewardsOverlay = document.getElementById("rewardsOverlay");
+const closeRewardBtn = document.getElementById("closeRewardBtn");
+
+function showReward(title, message) {
+    if (!rewardsOverlay) return;
+    document.getElementById("rewardTitle").textContent = title;
+    document.getElementById("rewardMessage").textContent = message;
+    rewardsOverlay.classList.remove("hidden");
+}
+
+if (closeRewardBtn) {
+    closeRewardBtn.addEventListener("click", () => {
+        rewardsOverlay.classList.add("hidden");
+    });
+}
+
 // Load previously entered text
 if (storyInput) {
     storyInput.value = localStorage.getItem("savedStory") || "";
@@ -32,6 +94,118 @@ let currentUtterance = null;
 
 const MS_PER_CHAR = 70;   // raise if highlight runs ahead of the voice, lower if it lags
 
+// ---------- Picture words ----------
+const PICTURE_WORDS = {
+    // animals
+    cat: "🐱", kitten: "🐱", dog: "🐶", puppy: "🐶", rabbit: "🐰", bunny: "🐰",
+    mouse: "🐭", rat: "🐀", bird: "🐦", duck: "🦆", owl: "🦉", chicken: "🐔",
+    hen: "🐔", pig: "🐷", cow: "🐮", horse: "🐴", sheep: "🐑", goat: "🐐",
+    fish: "🐟", frog: "🐸", turtle: "🐢", snake: "🐍", lizard: "🦎",
+    caterpillar: "🐛", butterfly: "🦋", bee: "🐝", ant: "🐜", spider: "🕷️",
+    snail: "🐌", bear: "🐻", lion: "🦁", tiger: "🐯", monkey: "🐵",
+    elephant: "🐘", giraffe: "🦒", zebra: "🦓", fox: "🦊", wolf: "🐺",
+    deer: "🦌", squirrel: "🐿️", hedgehog: "🦔", bat: "🦇", penguin: "🐧",
+    whale: "🐳", dolphin: "🐬", octopus: "🐙", crab: "🦀", shark: "🦈",
+    dragon: "🐉", unicorn: "🦄", dinosaur: "🦕", flamingo: "🦩", parrot: "🦜",
+    dodo: "🦤", lobster: "🦞", oyster: "🦪", pigeon: "🐦", eagle: "🦅",
+
+    // people
+    girl: "👧", boy: "👦", baby: "👶", man: "👨", woman: "👩",
+    mom: "👩", mother: "👩", dad: "👨", father: "👨", grandma: "👵",
+    grandpa: "👴", friend: "🧑‍🤝‍🧑", king: "🤴", queen: "👑", prince: "🤴",
+    princess: "👸", knight: "🛡️", fairy: "🧚", wizard: "🧙", witch: "🧙‍♀️",
+    teacher: "🧑‍🏫", doctor: "🧑‍⚕️", soldier: "💂", ghost: "👻",
+    robot: "🤖", alien: "👽", giant: "🧌",
+
+    // food and drink
+    tea: "🍵", teapot: "🫖", cup: "☕", coffee: "☕", milk: "🥛",
+    water: "💧", juice: "🧃", cake: "🍰", cookie: "🍪", candy: "🍬",
+    chocolate: "🍫", bread: "🍞", butter: "🧈", cheese: "🧀", egg: "🥚",
+    apple: "🍎", banana: "🍌", orange: "🍊", lemon: "🍋", grape: "🍇",
+    strawberry: "🍓", cherry: "🍒", peach: "🍑", pear: "🍐", watermelon: "🍉",
+    carrot: "🥕", corn: "🌽", potato: "🥔", tomato: "🍅", mushroom: "🍄",
+    pizza: "🍕", sandwich: "🥪", soup: "🍲", pie: "🥧", tart: "🥧",
+    honey: "🍯", jam: "🍓", icecream: "🍦", donut: "🍩", popcorn: "🍿",
+    salt: "🧂", pepper: "🌶️", food: "🍽️", dinner: "🍽️", lunch: "🥪",
+    breakfast: "🥞",
+
+    // nature
+    tree: "🌳", flower: "🌸", rose: "🌹", tulip: "🌷", sunflower: "🌻",
+    leaf: "🍃", leaves: "🍂", grass: "🌱", garden: "🏡", forest: "🌲",
+    mountain: "⛰️", hill: "⛰️", river: "🏞️", lake: "🏞️", ocean: "🌊",
+    sea: "🌊", wave: "🌊", beach: "🏖️", island: "🏝️", rock: "🪨",
+    sun: "☀️", moon: "🌙", star: "⭐", sky: "🌤️", cloud: "☁️",
+    rain: "🌧️", snow: "❄️", wind: "💨", storm: "⛈️", rainbow: "🌈",
+    fire: "🔥", ice: "🧊", night: "🌙", day: "☀️", hole: "🕳️",
+
+    // home and things
+    house: "🏠", home: "🏠", castle: "🏰", school: "🏫", door: "🚪",
+    window: "🪟", key: "🔑", lock: "🔒", bed: "🛏️", chair: "🪑",
+    table: "🍽️", bottle: "🍾", box: "📦", gift: "🎁", present: "🎁",
+    book: "📖", letter: "✉️", pen: "🖊️", pencil: "✏️", paper: "📄",
+    map: "🗺️", clock: "⏰", watch: "⌚", time: "⏰", bell: "🔔",
+    lamp: "💡", candle: "🕯️", mirror: "🪞", umbrella: "☂️", bag: "👜",
+    hat: "🎩", crown: "👑", shoe: "👟", dress: "👗", shirt: "👕",
+    glasses: "👓", ring: "💍", phone: "📱", computer: "💻", tv: "📺",
+    ball: "⚽", toy: "🧸", teddy: "🧸", kite: "🪁", balloon: "🎈",
+    drum: "🥁", guitar: "🎸", music: "🎵", song: "🎵", piano: "🎹",
+    sword: "🗡️", shield: "🛡️", treasure: "💰", money: "💰", coin: "🪙",
+    card: "🃏", cards: "🃏", flag: "🚩", tent: "⛺", magic: "✨",
+    potion: "🧪", wand: "🪄", fan: "🪭", glove: "🧤", gloves: "🧤",
+
+    // getting around
+    car: "🚗", bus: "🚌", train: "🚂", boat: "⛵", ship: "🚢",
+    plane: "✈️", bike: "🚲", rocket: "🚀", road: "🛣️", bridge: "🌉",
+
+    // feelings and body
+    heart: "❤️", love: "❤️", happy: "😊", sad: "😢", angry: "😠",
+    scared: "😨", surprised: "😮", tired: "😴", sleep: "😴", smile: "😊",
+    grin: "😁", laugh: "😂", cry: "😢", eye: "👁️", eyes: "👀",
+    hand: "✋", foot: "🦶", ear: "👂", nose: "👃", mouth: "👄",
+    tooth: "🦷", head: "🙂",
+
+    // Wonderland
+    wonderland: "✨", alice: "👧", rabbit: "🐰", hatter: "🎩",
+    caterpillar: "🐛", spade: "♠️", club: "♣️", diamond: "♦️", party: "🎉",
+    birthday: "🎂", dream: "💭", game: "🎲", croquet: "🏑"
+};
+
+// Builds one word: colors b/d/p/q and puts an emoji above picture words
+function buildWord(word) {
+    const span = document.createElement("span");
+    span.className = "word";
+
+    const letters = document.createElement("span");
+    for (const ch of word) {
+        if (/[bdpq]/i.test(ch)) {
+            const l = document.createElement("span");
+            l.className = "letter-" + ch.toLowerCase();
+            l.textContent = ch;
+            letters.appendChild(l);
+        } else {
+            letters.appendChild(document.createTextNode(ch));
+        }
+    }
+
+    const key = word.toLowerCase().replace(/[^a-z]/g, "");
+    const emoji =
+        PICTURE_WORDS[key] ||
+        PICTURE_WORDS[key.replace(/ies$/, "y")] ||   // bunnies -> bunny
+        PICTURE_WORDS[key.replace(/es$/, "")] ||     // boxes -> box
+        PICTURE_WORDS[key.replace(/s$/, "")];        // cats -> cat
+    if (emoji) {
+        const ruby = document.createElement("ruby");
+        const rt = document.createElement("rt");
+        rt.textContent = emoji;
+        ruby.appendChild(letters);
+        ruby.appendChild(rt);
+        span.appendChild(ruby);
+    } else {
+        span.appendChild(letters);
+    }
+    return span;
+}
+
 function renderWords(text) {
     storyText.textContent = "";
     wordSpans = [];
@@ -44,9 +218,7 @@ function renderWords(text) {
                 document.createTextNode(text.slice(lastEnd, match.index))
             );
         }
-        const span = document.createElement("span");
-        span.className = "word";
-        span.textContent = match[0];
+        const span = buildWord(match[0]);
         storyText.appendChild(span);
 
         wordSpans.push(span);
@@ -142,7 +314,7 @@ function readStory() {
     if (!storyText) return;
     stopReading();
 
-    const text = storyText.textContent.trim();
+    const text = (window.getCurrentPageText ? window.getCurrentPageText() : storyText.textContent).trim();
     if (!text) return;
 
     renderWords(text);
@@ -259,7 +431,7 @@ if (mainBtn) {
     function render() {
     stopReading();
 
-    textEl.textContent = pages[current];
+    renderWords(pages[current]);
 
     if (labelEl) {
         labelEl.textContent =
@@ -447,190 +619,25 @@ if (uploadBtn) {
     });
 }
 
-//-------------------------ascii art--------------------------
-
-const artBtn = document.getElementById("artBtn");
-const asciiArt = document.getElementById("asciiArt");
-
-async function makeAsciiArt(text) {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-            "x-api-key": API_KEY,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-            "anthropic-dangerous-direct-browser-access": "true"
-        },
-        body: JSON.stringify({
-            model: "claude-sonnet-5-5",
-            max_tokens: 1024,
-            messages: [{
-                role: "user",
-                content: "Draw a kid-friendly ASCII art picture of the main scene in this story. " +
-                         "Keep it under 30 lines and 60 characters wide. " +
-                         "Reply with ONLY the ASCII art, no explanation.\n\n" + text
-            }]
-        })
-    });
-    const data = await res.json();
-    return data.content[0].text;
-}
-
-function catFrame(i) {
-    const paint = ["~", "~*", "~*~", "~*~*"][i % 4];
-    const dots = ".".repeat(i % 4);
-    return " /\\_/\\\n" +
-           "( ^‿^ )__/ " + paint + "\n" +
-           "  > ^ <\n\n" +
-           "The Cheshire Cat is drawing" + dots;
-}
-
-if (artBtn) {
-    artBtn.addEventListener("click", async () => {
-        let i = 0;
-        asciiArt.textContent = catFrame(i);
-        const loading = setInterval(() => {
-            i++;
-            asciiArt.textContent = catFrame(i);
-        }, 300);
-
-        try {
-            const art = await makeAsciiArt(localStorage.getItem("story"));
-            clearInterval(loading);
-            asciiArt.textContent = art;
-        } catch (e) {
-            clearInterval(loading);
-            asciiArt.textContent = "Couldn't draw the scene.";
-            console.error(e);
-        }
-    });
-}
-
-
- // ---------- Wonderland Cookie Rewards ----------
-
-const REWARDS_KEY = "wonderRewards";
-
-function getRewards() {
-    const defaults = {
-        cookies: 0,
-        booked: [],
-        completed: [],
-        saved: []
-    };
-
+// ---------- Reading Assistants ----------
+function setupToggle(btnId, className) {
     try {
-        const stored = JSON.parse(
-            localStorage.getItem(REWARDS_KEY)
-        );
-
-        if (!stored) return defaults;
-
-        return {
-            ...defaults,
-            ...stored
-        };
-    } catch (error) {
-        return defaults;
-    }
-}
-
-let rewards = getRewards();
-
-function updateCookieCounter() {
-    const counter = document.getElementById("cookieCount");
-    const jarCounter = document.getElementById("jarCookieCount");
-
-    if (counter) {
-        counter.textContent = rewards.cookies;
-    }
-
-    if (jarCounter) {
-        jarCounter.textContent = `${rewards.cookies} Cookies`;
-    }
-}
-
-function saveRewards() {
-    localStorage.setItem(
-        REWARDS_KEY,
-        JSON.stringify(rewards)
-    );
-
-    updateCookieCounter();
-}
-
-function getStoryId() {
-    const story = localStorage.getItem("story") || "";
-
-    let hash = 0;
-
-    for (let i = 0; i < story.length; i++) {
-        hash = ((hash << 5) - hash) + story.charCodeAt(i);
-        hash |= 0;
-    }
-
-    return String(hash);
-}
-
-function awardCookies(type, amount) {
-    const storyId = getStoryId();
-
-    if (!storyId || storyId === "0") return false;
-
-    if (rewards[type].includes(storyId)) {
-        return false;
-    }
-
-    rewards.cookies += amount;
-    rewards[type].push(storyId);
-
-    saveRewards();
-    return true;
-}
-
-function showReward(title, message) {
-    const overlay = document.getElementById("rewardOverlay");
-    const titleEl = document.getElementById("rewardTitle");
-    const messageEl = document.getElementById("rewardMessage");
-
-    if (!overlay || !titleEl || !messageEl) return;
-
-    titleEl.textContent = title;
-    messageEl.textContent = message;
-
-    overlay.classList.remove("hidden");
-}
-
-const closeRewardBtn = document.getElementById("closeRewardBtn");
-
-if (closeRewardBtn) {
-    closeRewardBtn.addEventListener("click", () => {
-        document.getElementById("rewardOverlay")
-            .classList.add("hidden");
+        if (localStorage.getItem(className) === "on") document.body.classList.add(className);
+    } catch (e) {}
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.classList.toggle("active", document.body.classList.contains(className));
+    btn.addEventListener("click", () => {
+        const on = document.body.classList.toggle(className);
+        btn.classList.toggle("active", on);
+        try {
+            localStorage.setItem(className, on ? "on" : "off");
+        } catch (e) {}
     });
 }
 
-// ---------- Cookie Jar ----------
-
-const cookieJarBtn = document.getElementById("cookieJarBtn");
-const cookieJarOverlay = document.getElementById("cookieJarOverlay");
-const closeCookieJarBtn = document.getElementById("closeCookieJarBtn");
-
-if (cookieJarBtn && cookieJarOverlay) {
-    cookieJarBtn.addEventListener("click", () => {
-        updateCookieCounter();
-        cookieJarOverlay.classList.remove("hidden");
-    });
-}
-
-if (closeCookieJarBtn && cookieJarOverlay) {
-    closeCookieJarBtn.addEventListener("click", () => {
-        cookieJarOverlay.classList.add("hidden");
-    });
-}
-
-updateCookieCounter();
-
-
+setupToggle("pictureToggleBtn", "picture-words");
+setupToggle("letterToggleBtn", "letter-helper");
+setupToggle("fontToggleBtn", "dyslexic");
 
 
