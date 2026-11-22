@@ -434,3 +434,34 @@ body.letter-helper .letter-b { color: #4da6ff; font-weight: bold; }
 body.letter-helper .letter-d { color: #ff6b6b; font-weight: bold; }
 body.letter-helper .letter-p { color: #51cf66; font-weight: bold; }
 body.letter-helper .letter-q { color: #ffa94d; font-weight: bold; }
+
+
+/* ---------- Rewards Celebration Popup ---------- */
+
+.reward-modal {
+    width: 90%;
+    max-width: 450px;
+    padding: 30px;
+    box-sizing: border-box;
+    text-align: center;
+    border-radius: 20px;
+}
+
+.reward-modal h2 {
+    font-size: clamp(22px, 4vw, 32px);
+    line-height: 1.2;
+    margin: 0 0 15px;
+    overflow-wrap: break-word;
+}
+
+.reward-modal p {
+    font-size: 18px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.reward-modal button {
+    display: inline-block;
+    margin: 0 auto;
+}
+
