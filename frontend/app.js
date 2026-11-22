@@ -186,18 +186,60 @@ function renderWords(text) {
     wordStarts = [];
 
     let lastEnd = 0;
+
     for (const match of text.matchAll(/\S+/g)) {
         if (match.index > lastEnd) {
             storyText.appendChild(
-                document.createTextNode(text.slice(lastEnd, match.index))
+                document.createTextNode(
+                    text.slice(lastEnd, match.index)
+                )
             );
         }
+
+        const span = document.createElement("span");
+        span.className = "word";
+        span.textContent = match[0];
+
+        // Click an individual word to hear it
+        span.addEventListener("click", () => {
+            stopReading();
+
+            span.classList.add("highlight");
+
+            const speech = new SpeechSynthesisUtterance(
+                span.textContent
+            );
+
+            if (catVoice) speech.voice = catVoice;
+
+            speech.pitch = 1.3;
+            speech.rate = 0.95;
+
+            currentUtterance = speech;
+
+            speech.onend = () => {
+                if (currentUtterance === speech) {
+                    currentUtterance = null;
+                    clearHighlight();
+                }
+            };
+
+            window.speechSynthesis.speak(speech);
+        });
+
         const span = buildWord(match[0]);
         storyText.appendChild(span);
 
         wordSpans.push(span);
         wordStarts.push(match.index);
+
         lastEnd = match.index + match[0].length;
+    }
+
+    if (lastEnd < text.length) {
+        storyText.appendChild(
+            document.createTextNode(text.slice(lastEnd))
+        );
     }
 }
 
@@ -288,10 +330,11 @@ function readStory() {
     if (!storyText) return;
     stopReading();
 
+    const text = window.getCurrentPageText
+        ? window.getCurrentPageText()
+        : storyText.textContent.trim();
     const text = (window.getCurrentPageText ? window.getCurrentPageText() : storyText.textContent).trim();
     if (!text) return;
-
-    renderWords(text);
 
     const speech = new SpeechSynthesisUtterance(text);
     currentUtterance = speech;
@@ -403,6 +446,11 @@ if (mainBtn) {
 
 
     function render() {
+        if (typeof stopReading === "function") stopReading(); // stop the Cat on page change
+        renderWords(pages[current]);
+        if (labelEl) labelEl.textContent = `Page ${current + 1} of ${pages.length}`;
+        if (prevEl) prevEl.disabled = current === 0;
+        if (nextEl) nextEl.disabled = current === pages.length - 1;
     stopReading();
 
     renderWords(pages[current]);
