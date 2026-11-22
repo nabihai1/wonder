@@ -103,6 +103,7 @@ h2 {
 
 .footer {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
@@ -140,6 +141,33 @@ button:active {
     transform: translateY(0);
 }
 
+
+button:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+}
+
+/*button:focus-visible,
+textarea {
+    width: min(95%, 900px);
+    height: 380px;
+    background: var(--card-bg);
+    color: var(--text);
+    border: 2px solid var(--card-border);
+    border-radius: 20px;
+    padding: 24px;
+    font-family: inherit;
+    font-size: 1.3rem;
+    line-height: 1.6;
+    resize: none;
+    box-shadow: 0 6px 18px var(--shadow);
+}
+*/
+textarea:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+}
+
 button:disabled {
     opacity: 0.4;
     cursor: not-allowed;
@@ -172,6 +200,11 @@ button:disabled:hover {
     align-items: center;
     width: 100%;
     gap: 20px;
+}
+
+.size-buttons {
+    display: flex;
+    gap: 12px;
 }
 
 .text-controls button {
@@ -328,7 +361,6 @@ textarea::placeholder {
     font-size: 1.25rem;
 }
 
-#asciiArt { font-family: monospace; line-height: 1.1; white-space: pre; }
 /* ---------- Small screens ---------- */
 @media (max-width: 600px) {
     body {
@@ -362,3 +394,44 @@ textarea::placeholder {
     flex-direction: column;
     gap: 16px;
 }
+}
+
+.speed-btn {
+    flex: 1;
+    padding: 14px;
+    font-size: 1.2rem;
+    border: 2px solid var(--modal-border);
+    border-radius: 12px;
+}
+
+.speed-btn.active,
+.theme-btn.active {
+    border-color: var(--accent);
+    background: var(--hover);
+    font-weight: bold;
+}
+
+.assist-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+.assist-btn {
+    padding: 14px;
+    font-size: 1.2rem;
+    border: 2px solid var(--modal-border);
+    border-radius: 12px;
+}
+
+.assist-btn.active {
+    border-color: var(--accent);
+    background: var(--hover);
+    font-weight: bold;
+}
+
+rt { font-size: 0.6em; }
+body:not(.picture-words) rt { display: none; }
+body.picture-words #story-display { line-height: 2.4; }
+
+body.dyslexic, body.dyslexic button, body.dyslexic textarea { font-family: "OpenDyslexic", sans-serif; }
+
+body.letter-helper .letter-b { color: #4da6ff; font-weight: bold; }
+body.letter-helper .letter-d { color: #ff6b6b; font-weight: bold; }
+body.letter-helper .letter-p { color: #51cf66; font-weight: bold; }
+body.letter-helper .letter-q { color: #ffa94d; font-weight: bold; }
