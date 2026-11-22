@@ -206,24 +206,65 @@ function buildWord(word) {
     return span;
 }
 
+
 function renderWords(text) {
     storyText.textContent = "";
     wordSpans = [];
     wordStarts = [];
 
     let lastEnd = 0;
+
     for (const match of text.matchAll(/\S+/g)) {
         if (match.index > lastEnd) {
             storyText.appendChild(
-                document.createTextNode(text.slice(lastEnd, match.index))
+                document.createTextNode(
+                    text.slice(lastEnd, match.index)
+                )
             );
         }
+
+        // Build the word, including picture and letter helpers
         const span = buildWord(match[0]);
+
+        // Make individual words clickable
+        span.addEventListener("click", () => {
+            stopReading();
+
+            span.classList.add("highlight");
+
+            const speech = new SpeechSynthesisUtterance(
+                match[0]
+            );
+
+            if (catVoice) speech.voice = catVoice;
+
+            speech.pitch = 1.3;
+            speech.rate = readingRate;
+
+            currentUtterance = speech;
+
+            speech.onend = () => {
+                if (currentUtterance === speech) {
+                    currentUtterance = null;
+                    clearHighlight();
+                }
+            };
+
+            window.speechSynthesis.speak(speech);
+        });
+
         storyText.appendChild(span);
 
         wordSpans.push(span);
         wordStarts.push(match.index);
+
         lastEnd = match.index + match[0].length;
+    }
+
+    if (lastEnd < text.length) {
+        storyText.appendChild(
+            document.createTextNode(text.slice(lastEnd))
+        );
     }
 }
 
@@ -274,16 +315,19 @@ function stopReading() {
 const CAT_VOICE_NAME = "Google UK English Male";
 let catVoice = null;
 
+
 function loadCatVoice() {
     const voices = window.speechSynthesis.getVoices();
+
     catVoice =
-        voices.find((v) => v.name === CAT_VOICE_NAME) ||
-        voices.find((v) => v.lang === "en-GB") ||
+        voices.find(v => v.name === CAT_VOICE_NAME) ||
+        voices.find(v => v.lang === "en-GB") ||
+        voices.find(v => v.lang.startsWith("en")) ||
         null;
 }
 
 loadCatVoice();
-window.speechSynthesis.addEventListener("voiceschanged", loadCatVoice);
+window.speechSynthesis.onvoiceschanged = loadCatVoice;
 
 // ---------- Reading speed ----------
 const speedBtns = document.querySelectorAll(".speed-btn");
@@ -310,11 +354,16 @@ speedBtns.forEach((btn) => {
     btn.addEventListener("click", () => setSpeed(parseFloat(btn.dataset.rate)));
 });
 
+
 function readStory() {
     if (!storyText) return;
+
     stopReading();
 
-    const text = (window.getCurrentPageText ? window.getCurrentPageText() : storyText.textContent).trim();
+    const text = window.getCurrentPageText
+        ? window.getCurrentPageText()
+        : storyText.textContent.trim();
+
     if (!text) return;
 
     renderWords(text);
@@ -323,6 +372,7 @@ function readStory() {
     currentUtterance = speech;
 
     if (catVoice) speech.voice = catVoice;
+
     speech.pitch = 1.3;
     speech.rate = readingRate;
 
@@ -334,6 +384,7 @@ function readStory() {
     speech.onboundary = (e) => {
         if (currentUtterance !== speech) return;
         if (e.name && e.name !== "word") return;
+
         usingRealBoundaries = true;
         clearTimeout(highlightTimer);
         highlightWordAt(e.charIndex);
@@ -341,8 +392,10 @@ function readStory() {
 
     speech.onend = () => {
         if (currentUtterance !== speech) return;
+
         clearTimeout(highlightTimer);
         clearHighlight();
+        currentUtterance = null;
     };
 
     window.speechSynthesis.speak(speech);
@@ -426,36 +479,34 @@ if (mainBtn) {
     let current = Number.isInteger(savedPage)
     ? Math.max(0, Math.min(savedPage, pages.length - 1))
     : 0;
-
-
+    
     function render() {
-    stopReading();
+        stopReading();
 
-    renderWords(pages[current]);
+        renderWords(pages[current]);
 
-    if (labelEl) {
-        labelEl.textContent =
-            `Page ${current + 1} of ${pages.length}`;
+        if (labelEl) {
+            labelEl.textContent =
+                `Page ${current + 1} of ${pages.length}`;
+        }
+
+        if (prevEl) {
+            prevEl.disabled = current === 0;
+        }
+
+        if (nextEl) {
+            nextEl.disabled = current === pages.length - 1;
+        }
+
+        const finishBtn = document.getElementById("finishStoryBtn");
+
+        if (finishBtn) {
+            finishBtn.style.display =
+                current === pages.length - 1 && saved.trim()
+                    ? "inline-block"
+                    : "none";
+        }
     }
-
-    if (prevEl) {
-        prevEl.disabled = current === 0;
-    }
-
-    if (nextEl) {
-        nextEl.disabled = current === pages.length - 1;
-    }
-
-    const finishBtn = document.getElementById("finishStoryBtn");
-
-    if (finishBtn) {
-        finishBtn.style.display =
-            current === pages.length - 1 && saved.trim()
-                ? "inline-block"
-                : "none";
-    }
-}
-
 
     if (nextEl) nextEl.addEventListener("click", () => {
         if (current < pages.length - 1) { current++; render(); }
