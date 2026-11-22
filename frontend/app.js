@@ -507,4 +507,130 @@ if (artBtn) {
 }
 
 
+ // ---------- Wonderland Cookie Rewards ----------
+
+const REWARDS_KEY = "wonderRewards";
+
+function getRewards() {
+    const defaults = {
+        cookies: 0,
+        booked: [],
+        completed: [],
+        saved: []
+    };
+
+    try {
+        const stored = JSON.parse(
+            localStorage.getItem(REWARDS_KEY)
+        );
+
+        if (!stored) return defaults;
+
+        return {
+            ...defaults,
+            ...stored
+        };
+    } catch (error) {
+        return defaults;
+    }
+}
+
+let rewards = getRewards();
+
+function updateCookieCounter() {
+    const counter = document.getElementById("cookieCount");
+    const jarCounter = document.getElementById("jarCookieCount");
+
+    if (counter) {
+        counter.textContent = rewards.cookies;
+    }
+
+    if (jarCounter) {
+        jarCounter.textContent = `${rewards.cookies} Cookies`;
+    }
+}
+
+function saveRewards() {
+    localStorage.setItem(
+        REWARDS_KEY,
+        JSON.stringify(rewards)
+    );
+
+    updateCookieCounter();
+}
+
+function getStoryId() {
+    const story = localStorage.getItem("story") || "";
+
+    let hash = 0;
+
+    for (let i = 0; i < story.length; i++) {
+        hash = ((hash << 5) - hash) + story.charCodeAt(i);
+        hash |= 0;
+    }
+
+    return String(hash);
+}
+
+function awardCookies(type, amount) {
+    const storyId = getStoryId();
+
+    if (!storyId || storyId === "0") return false;
+
+    if (rewards[type].includes(storyId)) {
+        return false;
+    }
+
+    rewards.cookies += amount;
+    rewards[type].push(storyId);
+
+    saveRewards();
+    return true;
+}
+
+function showReward(title, message) {
+    const overlay = document.getElementById("rewardOverlay");
+    const titleEl = document.getElementById("rewardTitle");
+    const messageEl = document.getElementById("rewardMessage");
+
+    if (!overlay || !titleEl || !messageEl) return;
+
+    titleEl.textContent = title;
+    messageEl.textContent = message;
+
+    overlay.classList.remove("hidden");
+}
+
+const closeRewardBtn = document.getElementById("closeRewardBtn");
+
+if (closeRewardBtn) {
+    closeRewardBtn.addEventListener("click", () => {
+        document.getElementById("rewardOverlay")
+            .classList.add("hidden");
+    });
+}
+
+// ---------- Cookie Jar ----------
+
+const cookieJarBtn = document.getElementById("cookieJarBtn");
+const cookieJarOverlay = document.getElementById("cookieJarOverlay");
+const closeCookieJarBtn = document.getElementById("closeCookieJarBtn");
+
+if (cookieJarBtn && cookieJarOverlay) {
+    cookieJarBtn.addEventListener("click", () => {
+        updateCookieCounter();
+        cookieJarOverlay.classList.remove("hidden");
+    });
+}
+
+if (closeCookieJarBtn && cookieJarOverlay) {
+    closeCookieJarBtn.addEventListener("click", () => {
+        cookieJarOverlay.classList.add("hidden");
+    });
+}
+
+updateCookieCounter();
+
+
+
 

@@ -16,6 +16,9 @@
         <div class="header-buttons">
             <button id="settingsBtn">Settings</button>
         </div>
+
+        <!-- Cookie Jar Button -->
+         <button id="cookieJarBtn" class="cookie-jar-btn">  🫙 🍪 <span id="cookieCount">0</span> Cookies </button>
     </div>
 
     <div class="main">
@@ -66,6 +69,17 @@
             <button id="closeRewardBtn">Continue</button>
         </div>
     </div>
+
+    <!-- Cookie Jar Popup -->
+<div id="cookieJarOverlay" class="overlay hidden">
+    <div class="modal cookie-jar-modal">
+        <h2>🍪 My Cookie Jar 🫙</h2>
+        <p>You have collected:</p>
+        <h1 id="jarCookieCount">0 Cookies</h1>
+        <p>Keep reading to collect more cookies!</p>
+        <button id="closeCookieJarBtn">Close Jar</button>
+    </div>
+</div>
     <script src="app.js"></script>
 </body>
 </html>
