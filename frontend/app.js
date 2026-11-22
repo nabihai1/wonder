@@ -19,7 +19,7 @@ let highlightTimer = null;
 let usingRealBoundaries = false;
 let currentUtterance = null;
 
-const MS_PER_CHAR = 70;   // raise if highlight runs ahead of the voice, lower if it lags
+const MS_PER_CHAR = 70;
 
 function renderWords(text) {
     storyText.textContent = "";
