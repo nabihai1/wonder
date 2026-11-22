@@ -342,7 +342,9 @@ async function makeAsciiArt(text) {
         })
     });
     const data = await res.json();
-    return data.content[0].text;
+      console.log(data);
+    const block = data.content.find(b => b.type === "text");
+    return block ? block.text : "The Cat couldn't find a picture.";
 }
 
 function catFrame(i) {
