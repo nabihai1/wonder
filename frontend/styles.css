@@ -140,7 +140,6 @@ button:active {
     transform: translateY(0);
 }
 
-button:focus-visible,
 textarea {
     width: min(95%, 900px);
     height: 380px;
@@ -154,6 +153,10 @@ textarea {
     line-height: 1.6;
     resize: none;
     box-shadow: 0 6px 18px var(--shadow);
+}
+button:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
 }
 button:disabled {
     opacity: 0.4;
