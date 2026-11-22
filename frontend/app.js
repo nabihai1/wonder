@@ -280,7 +280,7 @@ themeBtns.forEach((btn) => {
 
 // ---------- Font size ----------
 const MIN_SIZE = 12;
-const MAX_SIZE = 48;
+const MAX_SIZE = 100;
 const STEP = 2;
 
 let fontSize = 20;
