@@ -24,8 +24,10 @@
             <p id="story-display"></p>
             <div class="text-controls">
                 <button id="catBtn">Cheshire Cat Reads</button>
-                <button id="smallerBtn" aria-label="Smaller text">Smaller</button>
-                <button id="biggerBtn" aria-label="Bigger text">Bigger</button>
+                <div class="size-buttons">
+                    <button id="smallerBtn" aria-label="Smaller text">Smaller</button>
+                    <button id="biggerBtn" aria-label="Bigger text">Bigger</button>
+                </div>
             </div>
         </div>
     </div>
@@ -34,7 +36,7 @@
         <button id="backBtn">Back</button>
         <p id="page-indicator">Page 1 of 1</p>
         <button id="nextBtn">Next</button>
-        <button id="saveStoryBtn"> Save & Leave 🍪</button>
+        <button id="saveStoryBtn">Save &amp; Leave 🍪</button>
         <button id="finishStoryBtn" style="display: none;">Finish Story 🎉</button>
     </footer>
 
@@ -63,7 +65,7 @@
         </div>
     </div>
 
-    <!--Rewards System celebration popup -->
+    <!-- Rewards popup -->
     <div id="rewardsOverlay" class="overlay hidden">
         <div class="modal reward-modal">
             <h2 id="rewardTitle">Congratulations! 🎉</h2>
@@ -71,6 +73,7 @@
             <button id="closeRewardBtn">Continue</button>
         </div>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>

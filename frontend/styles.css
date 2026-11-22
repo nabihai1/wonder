@@ -103,6 +103,7 @@ h2 {
 
 .footer {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: 12px;
@@ -140,7 +141,13 @@ button:active {
     transform: translateY(0);
 }
 
-button:focus-visible,
+
+button:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+}
+
+/*button:focus-visible,
 textarea {
     width: min(95%, 900px);
     height: 380px;
@@ -155,7 +162,7 @@ textarea {
     resize: none;
     box-shadow: 0 6px 18px var(--shadow);
 }
-
+*/
 textarea:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 3px;
@@ -193,6 +200,11 @@ button:disabled:hover {
     align-items: center;
     width: 100%;
     gap: 20px;
+}
+
+.size-buttons {
+    display: flex;
+    gap: 12px;
 }
 
 .text-controls button {
