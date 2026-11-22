@@ -19,7 +19,7 @@ let highlightTimer = null;
 let usingRealBoundaries = false;
 let currentUtterance = null;
 
-const MS_PER_CHAR = 70;   // raise if highlight runs ahead of the voice, lower if it lags
+const MS_PER_CHAR = 70;
 
 function renderWords(text) {
     storyText.textContent = "";
@@ -396,105 +396,3 @@ if (smallerBtn) {
         applyFontSize();
     });
 }
-
-
- // ---------- Wonderland Cookie Rewards ----------
-
-const REWARDS_KEY = "wonderRewards";
-
-function getRewards() {
-    const defaults = {
-        cookies: 0,
-        booked: [],
-        completed: [],
-        saved: []
-    };
-
-    try {
-        const stored = JSON.parse(
-            localStorage.getItem(REWARDS_KEY)
-        );
-
-        if (!stored) return defaults;
-
-        return {
-            ...defaults,
-            ...stored
-        };
-    } catch (error) {
-        return defaults;
-    }
-}
-
-let rewards = getRewards();
-
-function saveRewards() {
-    localStorage.setItem(
-        REWARDS_KEY,
-        JSON.stringify(rewards)
-    );
-
-    updateCookieCounter();
-}
-
-function updateCookieCounter() {
-    const counter = document.getElementById("cookieCount");
-
-    if (counter) {
-        counter.textContent = rewards.cookies;
-    }
-}
-
-function getStoryId() {
-    const story = localStorage.getItem("story") || "";
-
-    let hash = 0;
-
-    for (let i = 0; i < story.length; i++) {
-        hash = ((hash << 5) - hash) + story.charCodeAt(i);
-        hash |= 0;
-    }
-
-    return String(hash);
-}
-
-function awardCookies(type, amount) {
-    const storyId = getStoryId();
-
-    if (!storyId || storyId === "0") return false;
-
-    if (rewards[type].includes(storyId)) {
-        return false;
-    }
-
-    rewards.cookies += amount;
-    rewards[type].push(storyId);
-
-    saveRewards();
-    return true;
-}
-
-function showReward(title, message) {
-    const overlay = document.getElementById("rewardOverlay");
-    const titleEl = document.getElementById("rewardTitle");
-    const messageEl = document.getElementById("rewardMessage");
-
-    if (!overlay) return;
-
-    titleEl.textContent = title;
-    messageEl.textContent = message;
-
-    overlay.classList.remove("hidden");
-}
-
-const closeRewardBtn = document.getElementById("closeRewardBtn");
-
-if (closeRewardBtn) {
-    closeRewardBtn.addEventListener("click", () => {
-        document.getElementById("rewardOverlay")
-            .classList.add("hidden");
-    });
-}
-
-updateCookieCounter();
-
