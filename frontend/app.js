@@ -29,7 +29,7 @@ function getStoryId() {
 //     if (localStorage.getItem(flag)) return false;
 //     localStorage.setItem(flag, "1");
 //     const total = parseInt(localStorage.getItem("cookies"), 10) || 0;
-//     localStorage.setItem("cookies", String(total + amount));
+  //localStorage.setItem("cookies", String(total + amount));
 //     return true;
 // }
 
@@ -690,5 +690,26 @@ function setupToggle(btnId, className) {
 setupToggle("pictureToggleBtn", "picture-words");
 setupToggle("letterToggleBtn", "letter-helper");
 setupToggle("fontToggleBtn", "dyslexic");
+
+
+ // ---------- Reset Cookies on Refresh ----------
+
+function resetCookies() {
+    // Reset the cookie counter
+    localStorage.setItem("cookies", "0");
+
+    // Remove previous reward history
+    Object.keys(localStorage).forEach((key) => {
+        if (key.startsWith("reward_")) {
+            localStorage.removeItem(key);
+        }
+    });
+
+    // Update the displayed counter
+    updateCookieCounter();
+}
+
+resetCookies();
+
 
 
