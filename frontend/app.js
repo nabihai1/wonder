@@ -439,12 +439,36 @@ if (openStoryBtn) {
 }
 
 // story.html -> index.html
+// if (mainBtn) {
+//     mainBtn.addEventListener("click", () => {
+//         stopReading();
+//         window.location.href = "index.html";
+//     });
+// }
+
+
 if (mainBtn) {
     mainBtn.addEventListener("click", () => {
         stopReading();
+
+        // Only reset cookies after finishing the story
+        if (sessionStorage.getItem("storyFinished") === "true") {
+            localStorage.setItem("cookies", "0");
+
+            // Clear reward history for a fresh adventure
+            Object.keys(localStorage).forEach((key) => {
+                if (key.startsWith("reward_")) {
+                    localStorage.removeItem(key);
+                }
+            });
+
+            sessionStorage.removeItem("storyFinished");
+        }
+
         window.location.href = "index.html";
     });
 }
+
 
 // ---------- Pagination: 4 words per page ----------
 (function () {
@@ -533,6 +557,7 @@ if (finishBtn) {
         }
 
         const earned = awardCookies("completed", 5);
+        sessionStorage.setItem("storyFinished", "true");
 
         if (earned) {
             showReward(
@@ -709,7 +734,7 @@ function resetCookies() {
     updateCookieCounter();
 }
 
-resetCookies();
+//resetCookies();
 
 
 
