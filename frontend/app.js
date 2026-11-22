@@ -11,6 +11,17 @@ const storyText = document.getElementById("story-display");
 const biggerBtn = document.getElementById("biggerBtn");
 const smallerBtn = document.getElementById("smallerBtn");
 const catBtn = document.getElementById("catBtn");
+const storyInput = document.getElementById("story-input");
+
+// Load previously entered text
+if (storyInput) {
+    storyInput.value = localStorage.getItem("savedStory") || "";
+
+    // Save text whenever the user types
+    storyInput.addEventListener("input", () => {
+        localStorage.setItem("savedStory", storyInput.value);
+    });
+}
 
 // ---------- Reading + highlighting ----------
 let wordSpans = [];
@@ -294,7 +305,7 @@ themeBtns.forEach((btn) => {
 
 // ---------- Font size ----------
 const MIN_SIZE = 12;
-const MAX_SIZE = 48;
+const MAX_SIZE = 100;
 const STEP = 2;
 
 let fontSize = 20;
