@@ -376,3 +376,18 @@ textarea::placeholder {
     flex-direction: column;
     gap: 16px;
 }
+
+.speed-btn {
+    flex: 1;
+    padding: 14px;
+    font-size: 1.2rem;
+    border: 2px solid var(--modal-border);
+    border-radius: 12px;
+}
+
+.speed-btn.active,
+.theme-btn.active {
+    border-color: var(--accent);
+    background: var(--hover);
+    font-weight: bold;
+}
