@@ -394,7 +394,6 @@ textarea::placeholder {
     flex-direction: column;
     gap: 16px;
 }
-}
 
 .speed-btn {
     flex: 1;
