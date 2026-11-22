@@ -183,12 +183,15 @@ button:disabled:hover {
 
 .text-controls {
     display: flex;
-    justify-content: space-between;   /* Smaller left, Bigger right */
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
 }
 
 .text-controls button {
     padding: 12px 32px;
-    font-size: 1.4rem;
+    font-size: 1.5rem;
 }
 
 /* Upload file is a softer, secondary button next to Open Story */
