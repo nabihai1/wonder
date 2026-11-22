@@ -102,6 +102,31 @@ function loadCatVoice() {
 loadCatVoice();
 window.speechSynthesis.addEventListener("voiceschanged", loadCatVoice);
 
+// ---------- Reading speed ----------
+const speedBtns = document.querySelectorAll(".speed-btn");
+let readingRate = 0.95;
+
+try {
+    const savedRate = parseFloat(localStorage.getItem("readingRate"));
+    if (savedRate) readingRate = savedRate;
+} catch (e) {}
+
+function setSpeed(rate) {
+    readingRate = rate;
+    speedBtns.forEach((btn) => {
+        btn.classList.toggle("active", parseFloat(btn.dataset.rate) === rate);
+    });
+    try {
+        localStorage.setItem("readingRate", rate);
+    } catch (e) {}
+}
+
+setSpeed(readingRate);
+
+speedBtns.forEach((btn) => {
+    btn.addEventListener("click", () => setSpeed(parseFloat(btn.dataset.rate)));
+});
+
 function readStory() {
     if (!storyText) return;
     stopReading();
@@ -116,7 +141,7 @@ function readStory() {
 
     if (catVoice) speech.voice = catVoice;
     speech.pitch = 1.3;
-    speech.rate = 0.95;
+    speech.rate = readingRate;
 
     speech.onstart = () => {
         if (currentUtterance !== speech) return;
@@ -374,5 +399,6 @@ if (artBtn) {
         }
     });
 }
+
 
 
